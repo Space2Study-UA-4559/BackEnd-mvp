@@ -1,0 +1,13 @@
+---
+description: Dev Docker image — API + Mongo, not a broken multi-stage prod build
+globs: Dockerfile,compose.yaml,.dockerignore
+alwaysApply: false
+---
+
+# Docker (dev)
+
+- One stage: `node:18.14.2-alpine`, `ENV HUSKY=0`, `npm ci`, `CMD npm start`, port `8080`.
+- Compose: `server` + `mongo:6`. Host ports `8080` and `27017`. Compose sets `MONGODB_URL=mongodb://db:27017/space2study`.
+- Do not add `npm i --force`, `npm@latest`, `npm ci --only=dev`, a second production stage, nginx, or an external `s2s-network`.
+- JWT / mail / Azure still need dotenv (`.env` / `.env.local`). Compose does not inject them today.
+- CI Docker job only **builds** (`backend:test`, `push: false`). Do not log in to `s2sstage.azurecr.io` or restore `azure-pipeline.yaml`.

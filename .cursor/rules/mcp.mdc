@@ -1,0 +1,20 @@
+---
+description: When to use GitHub, Context7, Chrome DevTools, review, and dead-code tools
+alwaysApply: true
+---
+
+# MCP and analysis
+
+Keep the set small. Do not add Playwright, Sequential Thinking, filesystem, CodeRabbit, Knip, or MUI MCP.
+
+| Task | Use |
+| --- | --- |
+| Express 4 / Mongoose 6 / Jest 28 / jsonwebtoken 8 | Context7, pin those majors |
+| GitHub issues / PRs | GitHub MCP if authenticated, else `gh` |
+| Swagger click-through on `:8080` | Built-in Browser (Cursor) |
+| Network (status, CORS, payload, cookies, failed `/auth`) | `chrome-devtools`: `list_network_requests` / `get_network_request`. Do not drive the same page with Browser and Chrome DevTools at once. |
+| Code review | Cursor Bugbot / Security Review subagents (`/review-bugbot`, `/review-security`). Not an extra MCP. |
+| Unused imports | `npm run lint`. `eslint:recommended` already flags unused bindings. |
+| Dead files / unused exports / unused deps | `npx knip@5` (Node 18). Official `@knip/mcp` needs Node 20+ — do not add it here. Report only; do not mass-delete in this fork. |
+
+GitHub: `GITHUB_PERSONAL_ACCESS_TOKEN` (Cursor: also `/add-plugin github`). Context7: optional `CONTEXT7_API_KEY`. Chrome DevTools needs local Chrome. Cursor: `.cursor/mcp.json`. VS Code: `.vscode/mcp.json` + `.github/copilot-instructions.md`. Claude Code: `CLAUDE.md` + `.mcp.json`.

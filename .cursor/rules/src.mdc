@@ -1,0 +1,15 @@
+---
+description: Express layers, auth, and error conventions under src/
+globs: src/**/*.js
+alwaysApply: false
+---
+
+# src/
+
+- Routes wire middlewares and controllers. Controllers call services. Services talk to models. Do not query Mongoose from a route file.
+- Wrap controller handlers with `asyncWrapper`. Do not leave unhandled promise rejections in routes.
+- Throw `src/utils/errorsHelper.js`. The error middleware returns JSON `{ status, code, message }`.
+- Auth: Bearer access token via `authMiddleware`. Roles via `restrictTo(...)`. Refresh token is an httpOnly cookie.
+- Request bodies: `validationMiddleware` + schemas in `src/validation/schemas/`.
+- Mail language: `langMiddleware` (`en` / `ua`) and Pug under `src/emails/`.
+- Env-backed values live in `src/configs/config.js`. Do not read `process.env` in controllers.

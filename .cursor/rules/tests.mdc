@@ -1,0 +1,16 @@
+---
+description: Jest 28 and Supertest pitfalls for this repo
+globs: src/test/**/*.js
+alwaysApply: false
+---
+
+# Tests
+
+Jest is **28** in the Node environment. Specs live under `src/test/unit/` and `src/test/integration/`.
+
+- Integration: `serverInit` / `serverCleanup` / `stopServer` from `src/test/setup.js`. That starts the real Express app and Mongo, then drops the database. Point `.env.test.local` at a disposable DB.
+- HTTP assertions: Supertest via the `app` from `serverInit`. Shared error shape: `expectError` in `src/test/helpers.js`.
+- Auth in integration specs: `~/utils/testUserAuth`, not a hand-rolled JWT unless you are testing tokens themselves.
+- Unit-test middlewares/services/cron with Jest mocks. Do not boot Mongo in a unit spec.
+- Do not unit-test Pug templates, OpenAPI YAML, or third-party libraries.
+- Coverage: `src/test/coverage/`, 70% branches / 80% functions, lines, statements. `npm test` is also the pre-push hook.

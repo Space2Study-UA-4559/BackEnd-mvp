@@ -1,0 +1,15 @@
+---
+description: Core agent workflow, stack, git, and MCP for this backend MVP
+alwaysApply: true
+---
+
+# Project
+
+- Stack: Express 4, Mongoose 6, JWT, bcrypt, Nodemailer/Pug, Jest 28, Supertest, Node 18. CommonJS. Alias `~/` → `src/`.
+- Branch: `develop`. Do not invent a git-flow the repo does not use.
+- Reply in the user's language. Keep student-facing config comments in Ukrainian.
+- Do not commit `.env`, `.env.local`, `.env.test.local`, GitHub tokens, `node_modules`, `src/test/coverage`, or `test-report.xml`.
+- Do not change ESLint `linebreak-style` or rewrite line endings unless asked.
+- Live API: `:8080` (Swagger `/api-docs`). Network/CORS: `chrome-devtools`. Review: Bugbot, not a review MCP. Unused imports: ESLint. Dead code: `npx knip@5`, not `@knip/mcp`. Docs: Context7 (Express 4 / Mongoose 6 / Jest 28). No MUI MCP.
+- Docker is `npm start` + Mongo in Compose, not a production multi-stage image. CI builds `backend:test` and does not push.
+- Do not rebind Sonar/CI to `ita-social-projects` / SpaceToStudy. Sonar keys stay `CHANGE_ME` until students fill their own.

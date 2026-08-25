@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
+      # GitHub не дає читати secrets у if кроку — тому токен кладемо в env джоби.
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      MONGODB_URL: mongodb://localhost:27017/space2study-test
+      CLIENT_URL: http://localhost:3000
+      COOKIE_DOMAIN: localhost
+      SERVER_URL: http://localhost:8080
+      SERVER_PORT: 8080
+      JWT_ACCESS_SECRET: ci-access-secret
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_SECRET: ci-refresh-secret
+      JWT_REFRESH_EXPIRES_IN: 7d
+      JWT_RESET_SECRET: ci-reset-secret
+      JWT_RESET_EXPIRES_IN: 1d
+      JWT_CONFIRM_SECRET: ci-confirm-secret
+      JWT_CONFIRM_EXPIRES_IN: 1d
+      MAIL_USER: ci@example.com
+      MAIL_PASS: ci-pass
+      MAIL_FIRSTNAME: CI
+      MAIL_LASTNAME: Admin
+      GMAIL_CLIENT_ID: ci
+      GMAIL_CLIENT_SECRET: ci
+      GMAIL_REFRESH_TOKEN: ci
+      GMAIL_REDIRECT_URI: http://localhost
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # Повна історія потрібна SonarCloud для New Code. Не ставте fetch-depth: 1.
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm test
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+
+      # Студенти: увімкніть SonarCloud так:
+      # 1) заповніть sonar.projectKey і sonar.organization у sonar-project.properties
+      # 2) додайте репозиторний секрет SONAR_TOKEN (GitHub → Settings → Secrets → Actions)
+      # Крок не запускається без токена, щоб CI не падав на порожній заготовці.
+      - name: SonarCloud Scan
+        if: ${{ env.SONAR_TOKEN != '' && (success() || failure()) }}
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  docker:
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # Лише локальний білд. Не логінитись і не пушити в ACR оригінального проєкту.
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: backend:test
