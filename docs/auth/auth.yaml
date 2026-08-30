@@ -99,6 +99,48 @@ paths:
                     status: 401
                     code: 'EMAIL_NOT_CONFIRMED'
                     message: 'Please confirm your email to login.'
+  /auth/google-auth:
+    post:
+      tags:
+        - Auth
+      summary: Google authentication
+      description: Authenticates a user using a Google ID token, returns an access token and sets a cookie with a refresh token.
+      produces:
+        - application/json
+      requestBody:
+        required: true
+        description: Provide a Google ID token and optionally a role for registration.
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/googleAuth'
+            example:
+              token:
+                credential: google-id-token
+              role: student
+      responses:
+        200:
+          description: OK
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/accessToken'
+              example:
+                accessToken: access-token
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/Error'
+              example:
+                status: 401
+                code: 'USER_NOT_FOUND'
+                message: 'User with the specified email was not found.'
   /auth/logout:
     post:
       tags:

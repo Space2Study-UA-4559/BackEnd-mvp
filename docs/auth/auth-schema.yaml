@@ -42,3 +42,18 @@ definitions:
     properties:
       password:
         type: string
+  googleAuth:
+    type: object
+    properties:
+      token:
+        type: object
+        properties:
+          credential:
+            type: string
+        required:
+          - credential
+      role:
+        type: string
+        enum: [student, tutor]
+    required:
+      - token
