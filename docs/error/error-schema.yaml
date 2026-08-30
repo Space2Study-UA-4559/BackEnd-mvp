@@ -1,10 +1,12 @@
 components:
-  Error:
-    type: object
-    properties:
-      status:
-        type: number
-      code:
-        type: string
-      message:
-        type: string
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: number
+        code:
+          type: string
+        message:
+          type: string
+

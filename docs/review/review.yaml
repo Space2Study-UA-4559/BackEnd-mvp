@@ -1,5 +1,5 @@
 paths:
-  /reviews:
+  '/users/{id}/reviews':
     get:
       security:
         - bearerAuth: []
@@ -7,41 +7,44 @@ paths:
         - Reviews
       summary: Find all reviews
       description: Finds and returns an array with a list of reviews.
-      produces:
-        - application/json
       parameters:
-        - in: query
-          name: rating
-          schema:
-            type: integer
-          required: false
-        - in: query
-          name: skip
-          schema:
-            type: integer
-          required: false
-        - in: query
-          name: limit
-          schema:
-            type: integer
-          required: false
         - in: path
           name: id
           required: true
           schema:
             type: string
-        - in: path
+          description: The id parameter.
+        - in: query
           name: role
-          required: true
           schema:
             type: string
+          required: true
+          description: The role parameter.
+        - in: query
+          name: rating
+          schema:
+            type: integer
+          required: false
+          description: The rating parameter.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: The skip parameter.
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: The limit parameter.
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/reviewResponse'
+                $ref: '#/components/schemas/reviewResponse'
               example:
                 count: 2
                 reviews:
@@ -87,17 +90,16 @@ paths:
                         name: languages
                     createdAt: 2022-10-18T13:25:36.292Z
                     updatedAt: 2022-10-18T13:25:36.292Z
-
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
-                code: 'UNAUTHORIZED'
-                message: 'The requested URL requires user authorization.'
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
     post:
       security:
         - bearerAuth: []
@@ -105,15 +107,13 @@ paths:
         - Reviews
       summary: Create new review.
       description: Saves a new review the DB.
-      produces:
-        - application/json
       requestBody:
         required: true
         description: Create new review.
         content:
           application/json:
             schema:
-              $ref: '#/definitions/review'
+              $ref: '#/components/schemas/review'
             example:
               _id: 8755bc080a00adr9243df104
               comment: Best tutor!
@@ -123,38 +123,39 @@ paths:
               targetUserRole: tutor
               offer: 63ebc6fbd2f34037d0aba791
       responses:
-        201:
+        '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/definitions/reviewResponse'
+                $ref: '#/components/schemas/reviewResponse'
               example:
                 _id: 8755bc080a00adr9243df104
                 comment: Best tutor!
                 rating: 5
                 author:
                   _id: 6255bc080a75adf9223df211
-                  role: [student, tutor]
+                  role:
+                    - student
+                    - tutor
                   firstName: John
                   lastName: Doe
                   email: johndoe@gmail.com
                   mainSubjects:
-                    {
-                      student:
-                        [
-                          { _id: 6255bc080a75adf9223df444, name: Languages },
-                          { _id: 6255bc080a75adf443d7644, name: Biology }
-                        ],
-                      tutor:
-                        [
-                          { _id: 6255bc080a75adf9223df444, name: English }
-                        ]
-                    }
+                    student:
+                      - _id: 6255bc080a75adf9223df444
+                        name: Languages
+                      - _id: 6255bc080a75adf443d7644
+                        name: Biology
+                    tutor:
+                      - _id: 6255bc080a75adf9223df444
+                        name: English
                   totalReviews: 10
                   averageRating: 4.5
                   nativeLanguage: english
-                  address: { country: The USA, city: California }
+                  address:
+                    country: The USA
+                    city: California
                   education: KNPU H.S. Skovoroda
                   photo: john-doe-photo.jpg
                   lastLogin: null
@@ -174,37 +175,111 @@ paths:
                   category: 64045f98b131dd04d7896af6
                 createdAt: 2022-10-18T13:25:36.292Z
                 updatedAt: 2022-10-18T13:25:36.292Z
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
                 code: REVIEW_NOT_CREATED
                 message: You are allowed to leave only one review for a tutor.
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        403:
+        '403':
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 403
                 code: FORBIDDEN
                 message: You do not have permission to perform this action.
-  /reviews/{id}:
+  /users/{id}/reviews/stats:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Reviews
+      summary: Find review stats for a user with the specified ID and role
+      description: Finds and returns review statistics for a user with the specified ID and role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user for whom review stats are requested
+          schema:
+            type: string
+        - in: query
+          name: role
+          required: true
+          description: The user role used to filter review stats.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stats:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rating:
+                          type: number
+                        count:
+                          type: number
+              example:
+                stats:
+                  - rating: 5
+                    count: 1
+                  - rating: 3
+                    count: 1
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 400
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: DOCUMENT_NOT_FOUND
+                message: User with the specified id was not found.
+  '/reviews/{id}':
     get:
       security:
         - bearerAuth: []
@@ -212,47 +287,47 @@ paths:
         - Reviews
       summary: Find review by ID
       description: Finds and returns a reviews with the specified ID.
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           required: true
           description: ID of the review that needs to be fetched
-          type: string
+          schema:
+            type: string
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/reviewResponse'
+                $ref: '#/components/schemas/reviewResponse'
               example:
                 _id: 6255bc080a75adf9223df100
                 comment: Not bad
                 rating: 4
                 author:
                   _id: 6255bc080a75adf9223df100
-                  role: [student, tutor]
+                  role:
+                    - student
+                    - tutor
                   firstName: John
                   lastName: Doe
                   email: johndoe@gmail.com
                   mainSubjects:
-                    {
-                      student:
-                        [
-                          { _id: 6255bc080a75adf9223df444, name: Languages },
-                          { _id: 6255bc080a75adf443d7644, name: Biology }
-                        ],
-                      tutor:
-                        [
-                          { _id: 6255bc080a75adf9223df444, name: English }
-                        ]
-                    }
+                    student:
+                      - _id: 6255bc080a75adf9223df444
+                        name: Languages
+                      - _id: 6255bc080a75adf443d7644
+                        name: Biology
+                    tutor:
+                      - _id: 6255bc080a75adf9223df444
+                        name: English
                   totalReviews: 10
                   averageRating: 4.5
                   nativeLanguage: english
-                  address: { country: The USA, city: California }
+                  address:
+                    country: The USA
+                    city: California
                   education: KNPU H.S. Skovoroda
                   photo: john-doe-photo.jpg
                   lastLogin: null
@@ -278,41 +353,43 @@ paths:
                   category:
                     _id: 64045f98b131dd04d7896af6
                     name: languages
-                    categoryIcon: 
+                    categoryIcon:
                       path: categories-icons/link-to-icon.png
-                      color: "#66c42c"
+                      color: '#66c42c'
                     totalOffers: 9
-                    subjects: [{ _id: 6255bc080a71adf9223df134, name: English }]
+                    subjects:
+                      - _id: 6255bc080a71adf9223df134
+                        name: English
                     createdAt: 2023-20-01T13:25:36.292Z
                     updatedAt: 2023-20-01T13:25:36.292Z
                 createdAt: 2022-10-18T13:25:36.292Z
                 updatedAt: 2022-10-18T13:25:36.292Z
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
                 code: INVALID_ID
                 message: ID is invalid.
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
                 code: DOCUMENT_NOT_FOUND
@@ -324,63 +401,62 @@ paths:
         - Reviews
       summary: Update review by ID
       description: Finds and updates a review with the specified ID.
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           required: true
           description: Review ID
-          type: string
+          schema:
+            type: string
       requestBody:
         required: true
         description: Provide required data to update a review.
         content:
           application/json:
             schema:
-              $ref: '#/definitions/update-review'
+              $ref: '#/components/schemas/update-review'
             example:
               comment: Best tutor!
               rating: 5
       responses:
-        204:
+        '204':
           description: No Content
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
                 code: INVALID_ID
                 message: ID is invalid.
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        403:
+        '403':
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 403
                 code: FORBIDDEN
                 message: You do not have permission to perform this action.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
                 code: DOCUMENT_NOT_FOUND
@@ -392,53 +468,52 @@ paths:
         - Reviews
       summary: Find and delete review by ID
       description: Finds and deletes a review with the specified ID.
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           required: true
           description: ID of the review that needs to be deleted
-          type: string
+          schema:
+            type: string
       responses:
-        204:
+        '204':
           description: No Content
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
                 code: INVALID_ID
                 message: ID is invalid.
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        403:
+        '403':
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 403
                 code: FORBIDDEN
                 message: You do not have permission to perform this action.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
                 code: DOCUMENT_NOT_FOUND

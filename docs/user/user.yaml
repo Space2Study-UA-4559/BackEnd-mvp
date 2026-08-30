@@ -5,9 +5,10 @@ components:
       scheme: bearer
       bearerFormat: JWT
     role:
-      type: apiKey
       name: Authorization
       in: header
+      description: The Authorization parameter.
+      type: apiKey
 paths:
   /users:
     get:
@@ -17,106 +18,115 @@ paths:
         - Users
       summary: Find all users
       description: Finds and returns an array with a list of users.
-      produces:
-        - application/json
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/users'
+                $ref: '#/components/schemas/users'
               example:
                 - _id: 6255bc080a75adf9223df100
-                  role: [student, tutor]
+                  role:
+                    - student
+                    - tutor
                   firstName: John
                   lastName: Doe
                   email: johndoe@gmail.com
                   mainSubjects:
-                    {
-                      student:
-                        [
-                          {
-                            _id: 64593435163b62124ce4c3ab,
-                            name: Cybersecurity,
-                            category: '6421ed8ed991d46a84721df2',
-                            totalOffers: 15
-                          },
-                          {
-                            _id: 6422d995d898aa732d038e8f,
-                            name: Guitar,
-                            category: '6421ed8ed991d46a84721dfa',
-                            totalOffers: 0
-                          }
-                        ],
-                      tutor:
-                        [
-                          {
-                            _id: 6422d995d898aa732d038e8f,
-                            name: Guitar,
-                            category: '6421ed8ed991d46a84721dfa',
-                            totalOffers: 0
-                          }
-                        ]
-                    }
-                  totalReviews: { student: 10, tutor: 8 }
-                  averageRating: { student: 4.5, tutor: 4.9 }
+                    student:
+                      - _id: 64593435163b62124ce4c3ab
+                        name: Cybersecurity
+                        category: 6421ed8ed991d46a84721df2
+                        totalOffers: 15
+                      - _id: 6422d995d898aa732d038e8f
+                        name: Guitar
+                        category: 6421ed8ed991d46a84721dfa
+                        totalOffers: 0
+                    tutor:
+                      - _id: 6422d995d898aa732d038e8f
+                        name: Guitar
+                        category: 6421ed8ed991d46a84721dfa
+                        totalOffers: 0
+                  totalReviews:
+                    student: 10
+                    tutor: 8
+                  averageRating:
+                    student: 4.5
+                    tutor: 4.9
                   nativeLanguage: english
-                  address: { country: The USA, city: California }
+                  address:
+                    country: The USA
+                    city: California
                   professionalSummary: KNPU H.S. Skovoroda
                   photo: john-doe-photo.jpg
-                  status: { student: active, tutor: active, admin: active }
+                  status:
+                    student: active
+                    tutor: active
+                    admin: active
                   lastLogin: null
                   FAQ:
-                    {
-                      student: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }],
-                      tutor: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }]
-                    }
+                    student:
+                      - question: tutor question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: tutor answer
+                    tutor:
+                      - question: tutor question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: tutor answer
                   createdAt: 2021-04-09T11:34:53.243+00:00
                   updatedAt: 2022-09-02T11:59:53.243+00:00
                 - _id: 8755bc080a00adr9243df104
-                  role: [tutor]
+                  role:
+                    - tutor
                   firstName: Joe
                   lastName: Doe
                   email: joedoe@outlook.com
                   mainSubjects:
-                    {
-                      tutor:
-                        [
-                          {
-                            _id: 64593435163b62124ce4c3ab,
-                            name: Cybersecurity,
-                            category: '6421ed8ed991d46a84721df2',
-                            totalOffers: 0
-                          }
-                        ]
-                    }
-                  totalReviews: { student: 0, tutor: 530 }
-                  averageRating: { student: 0, tutor: 5 }
+                    tutor:
+                      - _id: 64593435163b62124ce4c3ab
+                        name: Cybersecurity
+                        category: 6421ed8ed991d46a84721df2
+                        totalOffers: 0
+                  totalReviews:
+                    student: 0
+                    tutor: 530
+                  averageRating:
+                    student: 0
+                    tutor: 5
                   nativeLanguage: ukrainian
-                  address: { country: Ukraine, city: Kharkiv }
+                  address:
+                    country: Ukraine
+                    city: Kharkiv
                   professionalSummary: KNPU H.S. Skovoroda
                   photo: joe-doe-photo.jpg
-                  status: { student: active, tutor: active, admin: active }
+                  status:
+                    student: active
+                    tutor: active
+                    admin: active
                   FAQ:
-                    {
-                      student: [{ question: student question, _id: 63525e23bf163f5ea609ff2b, answer: student answer }],
-                      tutor: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }]
-                    }
+                    student:
+                      - question: student question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: student answer
+                    tutor:
+                      - question: tutor question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: tutor answer
                   lastLogin: 2022-09-02T11:59:53.243+00:00
                   createdAt: 2021-04-09T11:34:53.243+00:00
                   updatedAt: 2022-09-02T11:59:53.243+00:00
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
-                code: 'UNAUTHORIZED'
-                message: 'The requested URL requires user authorization.'
-  /users/{id}/change-status:
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+  '/users/{id}/change-status':
     patch:
       security:
         - bearerAuth: []
@@ -124,67 +134,66 @@ paths:
         - Users
       summary: Find and update user status by ID
       description: Finds and updates a user status with the specified ID.
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           required: true
           description: ID of the user that needs to be updated
-          type: string
+          schema:
+            type: string
       requestBody:
         required: true
         description: Provide required data to update user status.
         content:
           application/json:
             schema:
-              $ref: '#/definitions/user'
+              $ref: '#/components/schemas/user'
             example:
               tutor: active
       responses:
-        204:
+        '204':
           description: No Content
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
-                code: 'INVALID_ID'
-                message: 'ID is invalid.'
-        401:
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
-                code: 'UNAUTHORIZED'
-                message: 'The requested URL requires user authorization.'
-        403:
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '403':
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 403
                 code: FORBIDDEN
                 message: You do not have permission to perform this action.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
-                code: 'DOCUMENT_NOT_FOUND'
-                message: 'User with the specified id was not found.'
-  /users/{id}:
+                code: DOCUMENT_NOT_FOUND
+                message: User with the specified id was not found.
+  '/users/{id}':
     get:
       security:
         - bearerAuth: []
@@ -192,26 +201,26 @@ paths:
         - Users
       summary: Find user by ID
       description: Finds and returns a user with the specified ID.
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           required: true
           description: ID of the user that needs to be fetched
-          type: string
+          schema:
+            type: string
         - name: role
           in: query
           required: false
           description: Role of the user that needs to be fetched
-          type: string
+          schema:
+            type: string
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/user'
+                $ref: '#/components/schemas/user'
               examples:
                 example1:
                   _id: 6255bc080a75adf9223df100
@@ -220,39 +229,44 @@ paths:
                   lastName: Doe
                   email: johndoe@gmail.com
                   mainSubjects:
-                    {
-                      student:
-                        [
-                          {
-                            _id: 64593435163b62124ce4c3ab,
-                            name: Cybersecurity,
-                            category: '6421ed8ed991d46a84721df2',
-                            totalOffers: 0
-                          },
-                          {
-                            _id: 6422d995d898aa732d038e8f,
-                            name: Guitar,
-                            category: '6421ed8ed991d46a84721dfa',
-                            totalOffers: 0
-                          }
-                        ]
-                    }
-                  totalReviews: { student: 10, tutor: 0 }
-                  averageRating: { student: 4.5, tutor: 0 }
+                    student:
+                      - _id: 64593435163b62124ce4c3ab
+                        name: Cybersecurity
+                        category: 6421ed8ed991d46a84721df2
+                        totalOffers: 0
+                      - _id: 6422d995d898aa732d038e8f
+                        name: Guitar
+                        category: 6421ed8ed991d46a84721dfa
+                        totalOffers: 0
+                  totalReviews:
+                    student: 10
+                    tutor: 0
+                  averageRating:
+                    student: 4.5
+                    tutor: 0
                   nativeLanguage: english
-                  address: { country: The USA, city: California }
+                  address:
+                    country: The USA
+                    city: California
                   ProfessionalSummary: KNPU H.S. Skovoroda
                   photo: john-doe-photo.jpg
-                  status: { student: active, tutor: active, admin: active }
+                  status:
+                    student: active
+                    tutor: active
+                    admin: active
                   isEmailConfirmed: true
                   isFirstLogin: true
                   lastLogin: 2022-09-02T11:59:53.243+00:00
                   bookmarkedOffers: []
                   FAQ:
-                    {
-                      student: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }],
-                      tutor: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }]
-                    }
+                    student:
+                      - question: tutor question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: tutor answer
+                    tutor:
+                      - question: tutor question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: tutor answer
                   createdAt: 2021-04-09T11:34:53.243+00:00
                   updatedAt: 2022-09-02T11:59:53.243+00:00
                 example2:
@@ -262,71 +276,76 @@ paths:
                   lastName: Doe
                   email: johndoe@gmail.com
                   mainSubjects:
-                    {
-                      student:
-                        [
-                          {
-                            _id: 64593435163b62124ce4c3ab,
-                            name: Cybersecurity,
-                            category: '6421ed8ed991d46a84721df2',
-                            totalOffers: 0
-                          },
-                          {
-                            _id: 6422d995d898aa732d038e8f,
-                            name: Guitar,
-                            category: '6421ed8ed991d46a84721dfa',
-                            totalOffers: 0
-                          }
-                        ]
-                    }
-                  totalReviews: { student: 10, tutor: 0 }
-                  averageRating: { student: 4.5, tutor: 0 }
+                    student:
+                      - _id: 64593435163b62124ce4c3ab
+                        name: Cybersecurity
+                        category: 6421ed8ed991d46a84721df2
+                        totalOffers: 0
+                      - _id: 6422d995d898aa732d038e8f
+                        name: Guitar
+                        category: 6421ed8ed991d46a84721dfa
+                        totalOffers: 0
+                  totalReviews:
+                    student: 10
+                    tutor: 0
+                  averageRating:
+                    student: 4.5
+                    tutor: 0
                   nativeLanguage: english
-                  address: { country: The USA, city: California }
+                  address:
+                    country: The USA
+                    city: California
                   professionalSummary: KNPU H.S. Skovoroda
                   photo: john-doe-photo.jpg
-                  status: { student: active, tutor: active, admin: active }
+                  status:
+                    student: active
+                    tutor: active
+                    admin: active
                   isEmailConfirmed: true
                   isFirstLogin: true
                   lastLogin: 2022-09-02T11:59:53.243+00:00
                   bookmarkedOffers: []
                   FAQ:
-                    {
-                      student: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }],
-                      tutor: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }]
-                    }
+                    student:
+                      - question: tutor question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: tutor answer
+                    tutor:
+                      - question: tutor question
+                        _id: 63525e23bf163f5ea609ff2b
+                        answer: tutor answer
                   createdAt: 2021-04-09T11:34:53.243+00:00
                   updatedAt: 2022-09-02T11:59:53.243+00:00
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
-                code: 'INVALID_ID'
-                message: 'ID is invalid.'
-        401:
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
-                status: 404
-                code: 'UNAUTHORIZED'
-                message: 'The requested URL requires user authorization.'
-        404:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
-                code: 'DOCUMENT_NOT_FOUND'
-                message: 'User with the specified id was not found.'
+                code: DOCUMENT_NOT_FOUND
+                message: User with the specified id was not found.
     patch:
       security:
         - bearerAuth: []
@@ -334,47 +353,46 @@ paths:
         - Users
       summary: Find and update current user info
       description: Finds and updates current user info.
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           required: true
           description: ID of the user that needs to be updated
-          type: string
+          schema:
+            type: string
       requestBody:
         required: true
         description: Provide required data to update user.
         content:
           application/json:
             schema:
-              $ref: '#/definitions/user'
+              $ref: '#/components/schemas/user'
             example:
               firstName: Albus
               lastName: Dumbledore
       responses:
-        204:
+        '204':
           description: No Content
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
-                code: 'UNAUTHORIZED'
-                message: 'The requested URL requires user authorization.'
-        404:
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
-                code: 'DOCUMENT_NOT_FOUND'
-                message: 'User with the specified id was not found.'
+                code: DOCUMENT_NOT_FOUND
+                message: User with the specified id was not found.
     delete:
       security:
         - bearerAuth: []
@@ -384,102 +402,105 @@ paths:
         - Users
       summary: Find and delete user by ID
       description: Finds and deletes a user with the specified ID.
-      produces:
-        - application/json
       parameters:
         - name: id
           in: path
           required: true
           description: ID of the user that needs to be deleted
-          type: string
+          schema:
+            type: string
       responses:
-        204:
+        '204':
           description: No Content
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
-                code: 'INVALID_ID'
-                message: 'ID is invalid.'
-        401:
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
-                code: 'UNAUTHORIZED'
-                message: 'The requested URL requires user authorization.'
-        403:
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '403':
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 403
                 code: FORBIDDEN
                 message: You do not have permission to perform this action.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
-                code: 'DOCUMENT_NOT_FOUND'
-                message: 'User with the specified id was not found.'
-  /users/{id}/reviews:
+                code: DOCUMENT_NOT_FOUND
+                message: User with the specified id was not found.
+  '/users/{id}/reviews':
     get:
       security:
         - bearerAuth: []
       tags:
         - Users
       summary: Find all reviews for a user with the specified ID and role
-      description: Finds and returns an array with a list of reviews for a user with the specified ID and role.
-      produces:
-        - application/json
+      description: Finds and returns an array with a list of reviews for a user with
+        the specified ID and role.
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: string
+          description: The id parameter.
         - in: query
           name: role
           required: true
           schema:
             type: string
+          description: The role parameter.
         - in: query
           name: rating
           schema:
             type: integer
           required: false
+          description: The rating parameter.
         - in: query
           name: skip
           schema:
             type: integer
             default: 0
           required: false
+          description: The skip parameter.
         - in: query
           name: limit
           schema:
             type: integer
             default: 5
           required: false
+          description: The limit parameter.
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/reviewResponse'
+                $ref: '#/components/schemas/reviewResponse'
               example:
                 count: 2
                 reviews:
@@ -525,102 +546,103 @@ paths:
                         name: languages
                     createdAt: 2022-10-18T13:25:36.292Z
                     updatedAt: 2022-10-18T13:25:36.292Z
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
-                code: 'INVALID_ID'
-                message: 'ID is invalid.'
-        401:
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
-                code: 'UNAUTHORIZED'
-                message: 'The requested URL requires user authorization.'
-        404:
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
-                code: 'DOCUMENT_NOT_FOUND'
-                message: 'User with the specified id was not found.'
-  /users/{id}/reviews/stats:
+                code: DOCUMENT_NOT_FOUND
+                message: User with the specified id was not found.
+  '/users/{id}/reviews/stats':
     get:
       security:
         - bearerAuth: []
       tags:
         - Users
       summary: Find review statistics for a user with the specified ID and role
-      description: Finds and returns a review statistics for a user with the specified ID and role.
-      produces:
-        - application/json
+      description: Finds and returns a review statistics for a user with the specified
+        ID and role.
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/reviewResponse'
+                $ref: '#/components/schemas/reviewResponse'
               example:
-                stats: [{ rating: 5, count: 1 }, { rating: 3, count: 1 }]
-        400:
+                stats:
+                  - rating: 5
+                    count: 1
+                  - rating: 3
+                    count: 1
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
                 code: INVALID_ID
                 message: ID is invalid.
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
                 code: DOCUMENT_NOT_FOUND
                 message: User with the specified id was not found.
-  /users/{id}/cooperations:
+  '/users/{id}/cooperations':
     get:
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       tags:
         - Users
       summary: Find cooperations for a user with the specified ID
       description: Finds and returns all cooperations for a user with the specified ID.
-      produces:
-        - application/json
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/cooperations'
+                $ref: '#/components/schemas/cooperations'
               example:
                 - _id: 63ebc6fbd2f34037d0aba314
                   offerId: 63ebc6fbd2f34037d0aba791
@@ -638,37 +660,37 @@ paths:
                   status: closed
                   createdAt: 2021-04-09T11:34:53.243+00:00
                   updatedAt: 2022-09-02T11:59:53.243+00:00
-        400:
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
                 code: INVALID_ID
                 message: ID is invalid.
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
                 code: DOCUMENT_NOT_FOUND
                 message: User with the specified id was not found.
-  /users/{id}/offers:
+  '/users/{id}/offers':
     get:
       security:
         - bearerAuth: []
@@ -676,24 +698,24 @@ paths:
         - Users
       summary: Find offers for a user with the specified ID
       description: Finds and returns all offers for a user with the specified ID.
-      produces:
-        - application/json
       responses:
-        200:
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/offers'
+                $ref: '#/components/schemas/offers'
               example:
                 count: 2
                 offers:
                   - _id: 63ebc6fbd2f34037d0aba791
                     price: 111
-                    proficiencyLevel: [Beginner]
+                    proficiencyLevel:
+                      - Beginner
                     title: offer title
                     description: offer description
-                    languages: [English]
+                    languages:
+                      - English
                     authorRole: tutor
                     authorFirstName: Amanda
                     authorLastName: Smith
@@ -704,43 +726,50 @@ paths:
                         student: 0
                         tutor: 0
                       FAQ:
-                        {
-                          student: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }],
-                          tutor: [{ question: tutor question, _id: 63525e23bf163f5ea609ff2b, answer: tutor answer }]
-                        }
+                        student:
+                          - question: tutor question
+                            _id: 63525e23bf163f5ea609ff2b
+                            answer: tutor answer
+                        tutor:
+                          - question: tutor question
+                            _id: 63525e23bf163f5ea609ff2b
+                            answer: tutor answer
                       professionalSummary: My professional summary
                       photo: link-to-photo.png
                     subject:
                       _id: 63da8767c9ad4c9a0b0eacd3
                       name: english
                     category: 63525e23bf163f5ea609ff2b
-                    FAQ: [{ _id: 63525e23bf163f5ea609ff2b, question: offer question, answer: offer answer }]
-        400:
+                    FAQ:
+                      - _id: 63525e23bf163f5ea609ff2b
+                        question: offer question
+                        answer: offer answer
+        '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 400
                 code: INVALID_ID
                 message: ID is invalid.
-        401:
+        '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        404:
+        '404':
           description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: '#/components/schemas/Error'
               example:
                 status: 404
                 code: DOCUMENT_NOT_FOUND
