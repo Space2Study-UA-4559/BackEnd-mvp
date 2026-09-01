@@ -1,7 +1,18 @@
-definitions:
-  admin-invitations:
-    type: array
-    items:
+components:
+  schemas:
+    admin-invitations:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+          email:
+            type: string
+          dateOfInvitation:
+            type: string
+            format: date-time
+    admin-invitation:
       type: object
       properties:
         _id:
@@ -11,20 +22,11 @@ definitions:
         dateOfInvitation:
           type: string
           format: date-time
-  admin-invitation:
-    type: object
-    properties:
-      _id:
-        type: string
-      email:
-        type: string
-      dateOfInvitation:
-        type: string
-        format: date-time
-  send-admin-invitations:
-    type: object
-    properties:
-      emails:
-        type: array
-        items:
-          type: string
+    send-admin-invitations:
+      type: object
+      properties:
+        emails:
+          type: array
+          items:
+            type: string
+

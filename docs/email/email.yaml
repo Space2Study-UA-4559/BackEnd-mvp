@@ -1,0 +1,55 @@
+paths:
+  /send-email:
+    post:
+      tags:
+        - Email
+      summary: Send an email
+      description: Sends an email using the configured template for the requested subject and language.
+      requestBody:
+        required: true
+        description: Provide email request details.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - subject
+              properties:
+                email:
+                  type: string
+                  format: email
+                subject:
+                  type: string
+                text:
+                  type: object
+                  additionalProperties: true
+              example:
+                email: johndoe@gmail.com
+                subject: emailConfirmation
+                text:
+                  firstName: John
+                  confirmToken: abc123
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: TEMPLATE_NOT_FOUND
+                message: The requested template was not found.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 400
+                code: EMAIL_NOT_SENT
+                message: Email has not been sent.

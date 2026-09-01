@@ -1,10 +1,9 @@
-definitions:
-  comments:
-    type: array
-    items:
+components:
+  schemas:
+    comment:
       type: object
       properties:
-        _id: 
+        _id:
           type: string
         author:
           type: object
@@ -18,16 +17,39 @@ definitions:
         text:
           type: string
         cooperation:
-          type: string
-          ref: '#components/cooperation'
-        createdAt: 
+          $ref: '#/components/schemas/cooperation'
+        createdAt:
           type: string
         updatedAt:
           type: string
-  commentBody:
-    type: object
-    properties:
-      text:
-        type: string
-    required:
-      - text
+    comments:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+          author:
+            type: object
+            properties:
+              _id:
+                type: string
+              firstName:
+                type: string
+              lastName:
+                type: string
+          text:
+            type: string
+          cooperation:
+            $ref: '#/components/schemas/cooperation'
+          createdAt:
+            type: string
+          updatedAt:
+            type: string
+    commentBody:
+      type: object
+      properties:
+        text:
+          type: string
+      required:
+        - text
