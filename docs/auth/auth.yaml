@@ -74,7 +74,7 @@ paths:
               schema:
                 type: string
                 example:
-                  refreshToken=eyJhbGciOiJIUzI1NiIsInRI.0IiwiaXNatalXJzdExvZ2A5Mjg4ODMsImV4cCI6MWomanzMjQ4M30.gn_hJqB9zVi5Ux5oRu22hGQ9W4z2njkdnx4O;
+                  refreshToken=example.refresh.jwt;
                   Max-Age=86400;
                   Path=/; Expires=Sat, 20 Aug 2022 17:32:57 GMT; HttpOnly;
                   Secure; SameSite=None
@@ -83,7 +83,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/accessToken'
               example:
-                accessToken: eyJhbGciOiJIUzI1NiIsInkpXV.jNDA4NmU1MjFmMCIsInJvbGVkZW50IiwiaXNataliaaXJzdExvZ2luIjp0cnSuperQiOjE2NjA5Mjg4ODMsImV4cCI6MWomanzMjQ4M30.gn_hJqB9zVi5Ux5oRu22hGQ9W4z2njkdnx
+                accessToken: example.access.jwt
         '401':
           description: Unauthorized
           content:
@@ -128,7 +128,7 @@ paths:
                   type: string
               example:
                 token:
-                  credential: eyJhbGciOiJSUzI1NiIsImtpZCI6...
+                  credential: example.google.credential
                 role: student
       responses:
         '200':
@@ -140,7 +140,7 @@ paths:
               examples:
                 success:
                   value:
-                    accessToken: eyJhbGciOiJIUzI1NiIsInRIkpXV.jRmMDFjNDA4NmU1MjFmMCIiO50IiwiaXNataliaaXJzdExvZ2luIjp0cnSuperQiOjE2NjA5Mjg4ODMsImV4cCI6MWomanz.gn_hJqB9zVi5Ux5oRu22hGQ9W4z2njkdnx4Od8NXeDM
+                    accessToken: example.access.jwt
         '401':
           description: Unauthorized
           content:
@@ -318,7 +318,7 @@ paths:
               schema:
                 type: string
                 example:
-                  refreshToken=eyJhbGciOiJIUzI1NiIpXV.0IiwiaXNatalXluIjE2NjA5Mjg4ODMsImV4cCI6MWomanzMjQ4M30.gn_hJqB9zVi5Ux5oRu22hGQ9W4z2njkdnx4O;
+                  refreshToken=example.refresh.jwt;
                   Max-Age=86400;
                   Path=/; Expires=Sat, 20 Aug 2022 17:32:57 GMT; HttpOnly;
                   Secure; SameSite=None
@@ -327,7 +327,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/accessToken'
               example:
-                accessToken: eyJhbGciOiJIUzI1NiIsInRIkpXV.jRmMDFjNDA4NmU1MjFmMCIiO50IiwiaXNataliaaXJzdExvZ2luIjp0cnSuperQiOjE2NjA5Mjg4ODMsImV4cCI6MWomanz.gn_hJqB9zVi5Ux5oRu22hGQ9W4z2njkdnx4Od8NXeDM
+                accessToken: example.access.jwt
         '400':
           description: Bad Request
           content:
