@@ -11,6 +11,8 @@ const offer = require('~/routes/offer')
 const category = require('~/routes/category')
 const cooperation = require('~/routes/cooperation')
 const comment = require('~/routes/comment')
+const question = require('~/routes/question')
+const resourcesCategory = require('~/routes/resourcesCategory')
 
 router.use('/auth', auth)
 router.use('/users', user)
@@ -23,5 +25,7 @@ router.use('/offers', offer)
 router.use('/categories', category)
 router.use('/cooperations', cooperation)
 router.use('/comments', comment)
+router.use('/questions', question)
+router.use('/resources-categories', resourcesCategory)
 
 module.exports = router
