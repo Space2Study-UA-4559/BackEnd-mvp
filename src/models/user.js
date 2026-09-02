@@ -89,7 +89,7 @@ const userSchema = new Schema(
       type: String,
       default: null,
       enum: {
-        values: SPOKEN_LANG_ENUM,
+        values: [...SPOKEN_LANG_ENUM, null],
         message: ENUM_CAN_BE_ONE_OF('native language', SPOKEN_LANG_ENUM)
       }
     },
