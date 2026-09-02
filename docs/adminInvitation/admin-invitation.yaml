@@ -7,55 +7,57 @@ paths:
         - Admin invitations
       summary: Invite admins
       description: Creates and sends admin invitations.
-      produces:
-        - application/json
       parameters:
-      - in: header
-        name: Accept-Language
-        type: string
-        enum: [en, ua]
-        required: true
+        - in: header
+          name: Accept-Language
+          enum:
+            - en
+            - ua
+          required: true
+          description: The Accept-Language parameter.
+          schema:
+            type: string
       requestBody:
         required: true
         description: Provide required data to invite admins.
         content:
           application/json:
             schema:
-              $ref: '#/definitions/send-admin-invitations'
+              $ref: "#/components/schemas/send-admin-invitations"
             example:
               emails:
-              - johndoe@gmail.com
-              - vasya@gmail.com
+                - johndoe@gmail.com
+                - vasya@gmail.com
       responses:
-        200:
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/admin-invitations'
+                $ref: "#/components/schemas/admin-invitations"
               example:
                 - _id: 6255bc080a75adf9223df100
                   email: johndoe@gmail.com
                   dateOfInvitation: 2022-09-02T11:59:53.243Z
                 - _id: 6255bc080a75adf9223df101
                   email: vasya@gmail.com
-                  dateOfInvitation: 2022-09-02T11:59:53.243Z     
-        401:
+                  dateOfInvitation: 2022-09-02T11:59:53.243Z
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        403:
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 status: 403
                 code: FORBIDDEN
@@ -67,39 +69,38 @@ paths:
         - Admin invitations
       summary: Find all admin invitations
       description: Finds and returns an array with a list of admin invitations.
-      produces:
-        - application/json
       responses:
-        200:
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/definitions/admin-invitations'
+                $ref: "#/components/schemas/admin-invitations"
               example:
                 - _id: 6255bc080a75adf9223df100
                   email: johndoe@gmail.com
                   dateOfInvitation: 2022-09-02T11:59:53.243Z
                 - _id: 6255bc080a75adf9223df101
                   email: vasya@gmail.com
-                  dateOfInvitation: 2022-09-02T11:59:53.243Z 
-        401:
+                  dateOfInvitation: 2022-09-02T11:59:53.243Z
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
-        403:
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 status: 403
                 code: FORBIDDEN
                 message: You do not have permission to perform this action.
+
