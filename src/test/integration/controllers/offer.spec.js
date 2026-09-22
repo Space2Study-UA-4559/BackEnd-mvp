@@ -4,6 +4,7 @@ const { DOCUMENT_NOT_FOUND } = require('~/consts/errors')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const Offer = require('~/models/offer')
 const Category = require('~/models/category')
+const Subject = require('~/models/subject')
 const checkCategoryExistence = require('~/seed/checkCategoryExistence')
 
 const endpointUrl = '/offers/'
@@ -46,11 +47,11 @@ describe('Offer controller', () => {
     const { _id, appearance } = categoryResponse[0]
     const category = { _id: _id.toString(), appearance }
 
-    const subjectResponse = await app.post('/subjects/').set('Authorization', `Bearer ${accessToken}`).send({
+    const subjectDoc = await Subject.create({
       name: 'testSubject',
-      category: category
+      category: _id
     })
-    const subject = subjectResponse.body._id
+    const subject = subjectDoc._id.toString()
 
     testOffer.category = category
     testOffer.subject = subject

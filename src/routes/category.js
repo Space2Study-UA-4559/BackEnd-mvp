@@ -28,14 +28,10 @@ PARAMS_ENUM.forEach((param) => {
 
 router.get(
   '/:categoryId?/subjects/:subjectId?/price-range',
-  isEntityValid({ params:nestedParams}),
+  isEntityValid({ params: nestedParams }),
   asyncWrapper(categoryController.priceMinMax)
 )
-router.use('/:categoryId?/subjects/:subjectId?/offers', isEntityValid({ params:nestedParams }), offerRouter)
+router.use('/:categoryId?/subjects/:subjectId?/offers', isEntityValid({ params: nestedParams }), offerRouter)
 router.use('/:id?/subjects', isEntityValid({ params }), subjectRouter)
-router.get('/', asyncWrapper(categoryController.getCategories))
-router.post('/', asyncWrapper(categoryController.addCategory))
-router.get('/names', asyncWrapper(categoryController.getCategoriesNames))
-router.get('/:id', isEntityValid({ params }), asyncWrapper(categoryController.getCategoryById))
 
 module.exports = router

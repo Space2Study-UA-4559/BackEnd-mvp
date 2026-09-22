@@ -4,6 +4,7 @@ const { expectError } = require('~/test/helpers')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const Review = require('~/models/review')
 const Category = require('~/models/category')
+const Subject = require('~/models/subject')
 const checkCategoryExistence = require('~/seed/checkCategoryExistence')
 const jwt = require('jsonwebtoken')
 const {
@@ -12,7 +13,6 @@ const {
 
 const endpointUrl = '/reviews/'
 const offerEndpointUrl = '/offers/'
-const subjectEndpointUrl = '/subjects/'
 
 const nonExistingReviewId = '63bed9ef260f18d04ab15da2'
 
@@ -65,8 +65,12 @@ describe('Review controller', () => {
     offerBody.category = category
     subjectBody.category = category
 
-    testSubject = await app.post(subjectEndpointUrl).set('Authorization', `Bearer ${accessToken}`).send(subjectBody)
-    subjectBody = testSubject.body
+    testSubject = await Subject.create({
+      name: subjectBody.name,
+      category: _id
+    })
+    subjectBody = testSubject.toObject()
+    subjectBody._id = testSubject._id.toString()
 
     testOffer = await app
       .post(offerEndpointUrl)
