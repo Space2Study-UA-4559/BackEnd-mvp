@@ -4,7 +4,6 @@ const {
 
 const { request } = require('gaxios')
 
-const OLD_API_URL = 'https://countriesnow.space/api/v0.1'
 const CSC_API_URL = 'https://api.countrystatecity.in/v1'
 
 const locationService = {
@@ -23,14 +22,33 @@ const locationService = {
     return countries
   },
 
-  getCities: async (country) => {
+  getCities: async (countryIso, stateIso) => {
     const res = await request({
-      method: 'POST',
-      url: `${OLD_API_URL}/countries/cities`,
-      data: { country }
+      method: 'GET',
+      url: `${CSC_API_URL}/countries/${countryIso}/states/${stateIso}/cities`,
+      headers: {
+        'X-CSCAPI-KEY': CSC_API_KEY
+      }
     })
 
-    return res.data.data
+    return res.data.map(({ id, name }) => ({
+      id,
+      name
+    }))
+  },
+
+  getStates: async (countryIso) => {
+    const res = await request({
+      method: 'GET',
+      url: `${CSC_API_URL}/countries/${countryIso}/states`,
+      headers: {
+        'X-CSCAPI-KEY': CSC_API_KEY
+      }
+    })
+    return res.data.map(({ name, iso2 }) => ({
+      name,
+      iso2
+    }))
   }
 }
 

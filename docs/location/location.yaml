@@ -27,19 +27,20 @@ paths:
                 iso2: UA
               - name: Poland
                 iso2: PL
-  /location/cities/{country}:
+  /location/states/{countryIso}:
     get:
       tags:
         - Location
-      summary: Get cities for a country
-      description: Returns a list of cities for the specified country name.
+      summary: Get states for a country
+      description: Returns states for the specified country ISO2 code.
       parameters:
-        - name: country
+        - name: countryIso
           in: path
           required: true
-          description: Country name.
+          description: ISO2 code of the country.
           schema:
             type: string
+            example: IN
       responses:
         '200':
           description: OK
@@ -48,8 +49,61 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  type: object
+                  required:
+                    - name
+                    - iso2
+                  properties:
+                    name:
+                      type: string
+                    iso2:
+                      type: string
               example:
-                - Kyiv
-                - Lviv
-                - Odesa
+                - name: Maharashtra
+                  iso2: MH
+                - name: Gujarat
+                  iso2: GJ
+  /location/cities/{countryIso}/{stateIso}:
+    get:
+      tags:
+        - Location
+      summary: Get cities for a state
+      description: Returns cities for the specified country and state ISO2 codes.
+      parameters:
+      - name: countryIso
+        in: path
+        required: true
+        description: ISO2 code of the country.
+        schema:
+          type: string
+          example: IN
+
+      - name: stateIso
+        in: path
+        required: true
+        description: ISO2 code of the state.
+        schema:
+          type: string
+          example: MH
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - name
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+              example:
+                - id: '134438'
+                  name: Yaval
+                - id: '134427'
+                  name: Yavatmal

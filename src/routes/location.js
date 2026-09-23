@@ -5,6 +5,7 @@ const asyncWrapper = require('~/middlewares/asyncWrapper')
 const locationController = require('~/controllers/location')
 
 router.get('/countries', asyncWrapper(locationController.getCountries))
-router.get('/cities/:country', asyncWrapper(locationController.getCities))
+router.get('/states/:countryIso', asyncWrapper(locationController.getStates))
+router.get('/cities/:countryIso/:stateIso', asyncWrapper(locationController.getCities))
 
 module.exports = router
