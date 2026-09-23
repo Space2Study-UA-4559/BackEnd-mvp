@@ -23,9 +23,12 @@ const locationService = {
   },
 
   getCities: async (countryIso, stateIso) => {
+    const encodedCountryIso = encodeURIComponent(countryIso.toUpperCase())
+    const encodedStateIso = encodeURIComponent(stateIso.toUpperCase())
+
     const res = await request({
       method: 'GET',
-      url: `${CSC_API_URL}/countries/${countryIso}/states/${stateIso}/cities`,
+      url: `${CSC_API_URL}/countries/${encodedCountryIso}/states/${encodedStateIso}/cities`,
       headers: {
         'X-CSCAPI-KEY': CSC_API_KEY
       }
@@ -38,9 +41,10 @@ const locationService = {
   },
 
   getStates: async (countryIso) => {
+    const encodedCountryIso = encodeURIComponent(countryIso.toUpperCase())
     const res = await request({
       method: 'GET',
-      url: `${CSC_API_URL}/countries/${countryIso}/states`,
+      url: `${CSC_API_URL}/countries/${encodedCountryIso}/states`,
       headers: {
         'X-CSCAPI-KEY': CSC_API_KEY
       }
