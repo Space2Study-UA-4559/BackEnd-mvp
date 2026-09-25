@@ -87,6 +87,14 @@ const errors = {
     code: 'INVALID_ID',
     message: 'ID is invalid.'
   },
+  INVALID_ISO_CODE: {
+    code: 'INVALID_ISO_CODE',
+    message: 'ISO code must contain exactly two letters.'
+  },
+  INVALID_STATE_ISO_CODE: {
+    code: 'INVALID_STATE_ISO_CODE',
+    message: 'State ISO code must contain from one to three letters or numbers.'
+  },
   API_TOKEN_NOT_RETRIEVED: {
     code: 'API_TOKEN_NOT_RETRIEVED',
     message: 'The access token has not been retrieved.'
