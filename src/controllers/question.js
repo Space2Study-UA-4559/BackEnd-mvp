@@ -1,6 +1,7 @@
 const questionService = require('~/services/question')
 const getCategoriesOptions = require('~/utils/getCategoriesOption')
 const getMatchOptions = require('~/utils/getMatchOptions')
+const getRegex = require('~/utils/getRegex')
 const getSortOptions = require('~/utils/getSortOptions')
 
 const getQuestions = async (req, res) => {
@@ -10,7 +11,7 @@ const getQuestions = async (req, res) => {
 
   const match = getMatchOptions({
     author,
-    title,
+    title: getRegex(title),
     category: categoriesOptions
   })
   const sortOptions = getSortOptions(sort)
