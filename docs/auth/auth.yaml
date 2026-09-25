@@ -297,6 +297,16 @@ paths:
                     status: 400
                     code: EMAIL_ALREADY_CONFIRMED
                     message: User email has been already confirmed.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: DOCUMENT_NOT_FOUND
+                message: User with the specified ID was not found.
   /auth/refresh:
     get:
       tags:

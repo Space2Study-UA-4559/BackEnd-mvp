@@ -6,6 +6,7 @@ const {
 const errors = require('~/consts/errors')
 const tokenService = require('~/services/token')
 const Token = require('~/models/token')
+const User = require('~/models/user')
 const { expectError } = require('~/test/helpers')
 const { OAuth2Client } = require('google-auth-library')
 
@@ -117,6 +118,15 @@ describe('Auth controller', () => {
       expect(response.statusCode).toBe(204)
     })
 
+    it('should remove confirm token after successful confirmation', async () => {
+      const response = await app.get(`/auth/confirm-email/${confirmToken}`)
+
+      expect(response.statusCode).toBe(204)
+
+      const tokenFromDB = await Token.find({ confirmToken })
+      expect(tokenFromDB).toHaveLength(0)
+    })
+
     it('should throw EMAIL_ALREADY_CONFIRMED error', async () => {
       await app.get(`/auth/confirm-email/${confirmToken}`)
       const response = await app.get(`/auth/confirm-email/${confirmToken}`)
@@ -128,6 +138,20 @@ describe('Auth controller', () => {
       const response = await app.get('/auth/confirm-email/invalid_token')
 
       expectError(400, errors.BAD_CONFIRM_TOKEN, response)
+    })
+
+    it('should throw DOCUMENT_NOT_FOUND error when user does not exist', async () => {
+      const nonExistentUserId = '631f8e5e587794b884b75483'
+      const confirmTokenForMissingUser = tokenService.generateConfirmToken({
+        id: nonExistentUserId,
+        role: 'student'
+      })
+
+      Token.findOne = jest.fn().mockResolvedValue({ confirmToken: confirmTokenForMissingUser })
+
+      const response = await app.get(`/auth/confirm-email/${confirmTokenForMissingUser}`)
+
+      expectError(404, errors.DOCUMENT_NOT_FOUND([User.modelName]), response)
     })
   })
 
@@ -305,6 +329,68 @@ describe('Auth controller', () => {
       expect(response.body).toEqual(
         expect.objectContaining({
           accessToken: expect.any(String)
+        })
+      )
+    })
+
+    it('should throw error when Google ID token is invalid', async () => {
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: jest.fn().mockRejectedValue(new Error('Invalid token'))
+      }))
+
+      const response = await app.post('/auth/google-auth').send({ token: { credential: 'invalid' } })
+
+      expect(response.statusCode).toBe(500)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          status: 500,
+          code: errors.INTERNAL_SERVER_ERROR.code,
+          message: 'Invalid token'
+        })
+      )
+    })
+
+    it('should login existing Google user', async () => {
+      const role = 'tutor'
+      await app.post('/auth/google-auth').send({ token: { credential }, role })
+
+      const response = await app.post('/auth/google-auth').send({ token: { credential } })
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          accessToken: expect.any(String)
+        })
+      )
+    })
+
+    it('should throw validation error when token is not provided', async () => {
+      const response = await app.post('/auth/google-auth').send({})
+
+      expectError(422, errors.FIELD_IS_NOT_DEFINED('token'), response)
+    })
+
+    it('should throw error when credential is not provided', async () => {
+      OAuth2Client.mockImplementation(() => ({
+        verifyIdToken: jest.fn(({ idToken }) => {
+          if (!idToken) {
+            return Promise.reject(new Error('Credential missing'))
+          }
+
+          return Promise.resolve({
+            getPayload: () => ({ given_name: 'test', family_name: 'test', email: 'test@test.com', sub: '123456789' })
+          })
+        })
+      }))
+
+      const response = await app.post('/auth/google-auth').send({ token: {} })
+
+      expect(response.statusCode).toBe(500)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          status: 500,
+          code: errors.INTERNAL_SERVER_ERROR.code,
+          message: 'Credential missing'
         })
       )
     })

@@ -11,8 +11,10 @@ const {
   INCORRECT_CREDENTIALS,
   BAD_RESET_TOKEN,
   BAD_REFRESH_TOKEN,
-  USER_NOT_FOUND
+  USER_NOT_FOUND,
+  DOCUMENT_NOT_FOUND
 } = require('~/consts/errors')
+const User = require('~/models/user')
 const emailSubject = require('~/consts/emailSubject')
 const {
   tokenNames: { REFRESH_TOKEN, RESET_TOKEN, CONFIRM_TOKEN }
@@ -26,6 +28,7 @@ const authService = {
     const user = await createUser(role, firstName, lastName, email, password, language)
 
     const confirmToken = tokenService.generateConfirmToken({ id: user._id, role })
+
     await tokenService.saveToken(user._id, confirmToken, CONFIRM_TOKEN)
     await emailService.sendEmail(email, emailSubject.EMAIL_CONFIRMATION, language, { confirmToken, email, firstName })
     return {
@@ -105,13 +108,20 @@ const authService = {
       throw createError(400, BAD_CONFIRM_TOKEN)
     }
 
-    const { _id, isEmailConfirmed } = await getUserById(tokenData.id)
+    const user = await getUserById(tokenData.id)
+
+    if (!user) {
+      throw createError(404, DOCUMENT_NOT_FOUND([User.modelName]))
+    }
+
+    const { _id, isEmailConfirmed } = user
 
     if (isEmailConfirmed) {
       throw createError(400, EMAIL_ALREADY_CONFIRMED)
     }
 
     await privateUpdateUser(_id, { isEmailConfirmed: true })
+    await tokenService.removeConfirmToken(confirmToken)
   },
 
   refreshAccessToken: async (refreshToken) => {
