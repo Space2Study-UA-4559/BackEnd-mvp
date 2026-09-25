@@ -24,20 +24,14 @@ describe('ISO code validation middleware', () => {
 
     expect(mockNextFunc).toHaveBeenCalled()
   })
-  it('Should throw when state code has more than three characters', () => {
-    const validationFunc = () => stateIsoCodeValidation(mockRequest, mockResponse, mockNextFunc, 'ABCD')
-    expect(validationFunc).toThrow(createError(400, INVALID_STATE_ISO_CODE))
-    expect(mockNextFunc).not.toHaveBeenCalled()
-  })
-  it('Should throw when state code contains a special character', () => {
-    const validationFunc = () => stateIsoCodeValidation(mockRequest, mockResponse, mockNextFunc, 'a-1')
-    expect(validationFunc).toThrow(createError(400, INVALID_STATE_ISO_CODE))
-    expect(mockNextFunc).not.toHaveBeenCalled()
-  })
-  it('Should reject a path traversal value', () => {
-    const validationFunc = () => stateIsoCodeValidation(mockRequest, mockResponse, mockNextFunc, '../cities')
+  const invalidCodes = ['ABCD', 'a-1', '../cities']
 
-    expect(validationFunc).toThrow(createError(400, INVALID_STATE_ISO_CODE))
-    expect(mockNextFunc).not.toHaveBeenCalled()
+  invalidCodes.forEach((code) => {
+    it(`Should reject invalid state code "${code}"`, () => {
+      const validationFunc = () => stateIsoCodeValidation(mockRequest, mockResponse, mockNextFunc, code)
+
+      expect(validationFunc).toThrow(createError(400, INVALID_STATE_ISO_CODE))
+      expect(mockNextFunc).not.toHaveBeenCalled()
+    })
   })
 })
