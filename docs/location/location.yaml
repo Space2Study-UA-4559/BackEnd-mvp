@@ -4,7 +4,7 @@ paths:
       tags:
         - Location
       summary: Get all countries
-      description: Returns a unique list of country names from the external location service.
+      description: Returns a unique list of objects which include country names and iso2 from the external location service.
       responses:
         '200':
           description: OK
@@ -13,11 +13,20 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  type: object
+                  required:
+                    - name
+                    - iso2
+                  properties:
+                    name:
+                      type: string
+                    iso2:
+                      type: string
               example:
-                - Ukraine
-                - Poland
-                - Germany
+              - name: Ukraine
+                iso2: UA
+              - name: Poland
+                iso2: PL
   /location/cities/{country}:
     get:
       tags:
