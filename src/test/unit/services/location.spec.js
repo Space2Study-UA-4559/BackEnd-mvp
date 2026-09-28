@@ -71,3 +71,93 @@ describe('Countries service', () => {
     await expect(locationService.getCountries()).rejects.toThrow('External API error')
   })
 })
+describe('States service', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+  it('Should call external API with correct parameters', async () => {
+    request.mockResolvedValue({ data: [] })
+
+    await locationService.getStates('UA')
+
+    expect(request).toHaveBeenCalledWith({
+      method: 'GET',
+      url: 'https://api.countrystatecity.in/v1/countries/UA/states',
+      headers: {
+        'X-CSCAPI-KEY': 'test-api-key'
+      }
+    })
+  })
+  it('Should return states in the correct format', async () => {
+    request.mockResolvedValue({
+      data: [
+        { id: '4008', name: 'Maharashtra', iso2: 'MH', type: 'state' },
+        { id: '4007', name: 'Gujarat', iso2: 'GJ', type: 'state' }
+      ]
+    })
+    const result = await locationService.getStates('IN')
+    expect(result).toEqual([
+      { name: 'Maharashtra', iso2: 'MH' },
+      { name: 'Gujarat', iso2: 'GJ' }
+    ])
+  })
+  it('Should return an empty array when API returns no states', async () => {
+    request.mockResolvedValue({ data: [] })
+
+    const result = await locationService.getStates('IN')
+
+    expect(result).toEqual([])
+  })
+  it('Should reject when external API returns an error', async () => {
+    const apiError = new Error('External API error')
+    request.mockRejectedValue(apiError)
+
+    await expect(locationService.getStates('IN')).rejects.toThrow('External API error')
+  })
+})
+describe('Cities service', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+  it('Should call external API with correct parameters', async () => {
+    request.mockResolvedValue({ data: [] })
+
+    await locationService.getCities('IN', 'MH')
+
+    expect(request).toHaveBeenCalledWith({
+      method: 'GET',
+      url: 'https://api.countrystatecity.in/v1/countries/IN/states/MH/cities',
+      headers: {
+        'X-CSCAPI-KEY': 'test-api-key'
+      }
+    })
+  })
+  it('Should return cities in the correct format', async () => {
+    request.mockResolvedValue({
+      data: [
+        { id: '134438', name: 'Yaval', kind: 'settlement' },
+        { id: '134427', name: 'Yavatmal', kind: 'settlement' },
+        { id: '134434', name: 'Yeola', kind: 'settlement' }
+      ]
+    })
+    const result = await locationService.getCities('IN', 'MH')
+    expect(result).toEqual([
+      { id: '134438', name: 'Yaval' },
+      { id: '134427', name: 'Yavatmal' },
+      { id: '134434', name: 'Yeola' }
+    ])
+  })
+  it('Should return an empty array when API returns no cities', async () => {
+    request.mockResolvedValue({ data: [] })
+
+    const result = await locationService.getCities('IN', 'MH')
+
+    expect(result).toEqual([])
+  })
+  it('Should reject when external API returns an error', async () => {
+    const apiError = new Error('External API error')
+    request.mockRejectedValue(apiError)
+
+    await expect(locationService.getCities('IN', 'MH')).rejects.toThrow('External API error')
+  })
+})
