@@ -1,2 +1,34 @@
 components:
-  schemas: {}
+  schemas:
+    subject:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          description: Category ObjectId reference.
+        totalOffers:
+          type: object
+          properties:
+            student:
+              type: number
+            tutor:
+              type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    subjects:
+      type: object
+      properties:
+        count:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/subject'
