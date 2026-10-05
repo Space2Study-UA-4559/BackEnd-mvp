@@ -1,2 +1,42 @@
 components:
-  schemas: {}
+  schemas:
+    category:
+      type: object
+      required:
+        - name
+        - appearance
+      properties:
+        _id:
+          type: string
+          description: Unique category identifier.
+          example: 64884f33fdc2d1a130c24ac2
+        name:
+          type: string
+          minLength: 1
+          maxLength: 30
+          description: Required unique category name.
+          example: Mathematics
+        appearance:
+          type: object
+          required:
+            - icon
+            - color
+          properties:
+            icon:
+              type: string
+              description: Path to the category icon.
+              default: mocked-path-to-icon
+              example: mocked-path-to-icon
+            color:
+              type: string
+              description: Color of the category icon.
+              default: '#66C42C'
+              example: '#66C42C'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-10-05T12:00:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-10-05T12:00:00.000Z'
