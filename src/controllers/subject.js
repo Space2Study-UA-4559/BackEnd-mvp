@@ -18,6 +18,14 @@ const subjectController = {
     const subjects = await subjectService.getSubjects(match, sortOptions, parseInt(skip), parseInt(limit))
 
     res.status(200).json(subjects)
+  },
+
+  getSubjectById: async (req, res) => {
+    const { id } = req.params
+
+    const subject = await subjectService.getSubjectById(id)
+
+    res.status(200).json(subject)
   }
 }
 

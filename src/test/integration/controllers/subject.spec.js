@@ -7,6 +7,7 @@ const { expectError } = require('~/test/helpers')
 
 const endpointUrl = '/subjects/'
 const nonExistingCategoryId = '6329a45601bd35b5fff1cf8c'
+const nonExistingSubjectId = '6329a45601bd35b5fff1cf8d'
 
 describe('Subject controller', () => {
   let app, server, accessToken
@@ -132,9 +133,7 @@ describe('Subject controller', () => {
     })
 
     it('should throw INVALID_ID error when category id is invalid', async () => {
-      const response = await app
-        .get(`/categories/invalid${endpointUrl}`)
-        .set('Authorization', `Bearer ${accessToken}`)
+      const response = await app.get(`/categories/invalid${endpointUrl}`).set('Authorization', `Bearer ${accessToken}`)
 
       expectError(400, INVALID_ID, response)
     })
@@ -145,6 +144,44 @@ describe('Subject controller', () => {
         .set('Authorization', `Bearer ${accessToken}`)
 
       expectError(404, DOCUMENT_NOT_FOUND([Category.modelName]), response)
+    })
+  })
+
+  describe(`test GET ${endpointUrl}:id`, () => {
+    it('should GET subject by id', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' }).lean()
+
+      const response = await app.get(endpointUrl + subject._id).set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          _id: subject._id.toString(),
+          name: 'testSubject',
+          category: subject.category.toString(),
+          totalOffers: { student: 0, tutor: 0 }
+        })
+      )
+    })
+
+    it('should throw UNAUTHORIZED error', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app.get(endpointUrl + subject._id)
+
+      expectError(401, UNAUTHORIZED, response)
+    })
+
+    it('should throw INVALID_ID error when subject id is invalid', async () => {
+      const response = await app.get(endpointUrl + 'invalid').set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(400, INVALID_ID, response)
+    })
+
+    it('should throw DOCUMENT_NOT_FOUND error when subject does not exist', async () => {
+      const response = await app.get(endpointUrl + nonExistingSubjectId).set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(404, DOCUMENT_NOT_FOUND([Subject.modelName]), response)
     })
   })
 })

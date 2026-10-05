@@ -68,6 +68,67 @@ paths:
                 status: 401
                 code: UNAUTHORIZED
                 message: The requested URL requires user authorization.
+  /subjects/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Subjects
+      summary: Find subject by ID
+      description: Finds and returns a subject with the specified ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the subject that needs to be fetched
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subject'
+              example:
+                _id: 63da8767c9ad4c9a0b0eacd3
+                name: English
+                category: 64884f21fdc2d1a130c24ac0
+                totalOffers:
+                  student: 0
+                  tutor: 3
+                createdAt: 2022-10-18T13:25:36.292Z
+                updatedAt: 2022-10-18T13:25:36.292Z
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 400
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: DOCUMENT_NOT_FOUND
+                message: Subject with the specified ID was not found.
   /categories/{id}/subjects:
     get:
       security:
