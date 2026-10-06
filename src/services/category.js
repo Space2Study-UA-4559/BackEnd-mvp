@@ -1,7 +1,14 @@
+const Category = require('~/models/category')
 const Offer = require('~/models/offer')
 const conditionCreator = require('~/utils/categories/conditionCreator')
 
 const categoryService = {
+  createCategory: async (data) => {
+    const { name, appearance } = data
+
+    return await Category.create({ name, appearance })
+  },
+
   priceMinMax: async (searchParams) => {
     const matchCondition = conditionCreator.condition(searchParams)
 
