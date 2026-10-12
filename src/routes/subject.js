@@ -8,6 +8,7 @@ const { authMiddleware } = require('~/middlewares/auth')
 router.use(authMiddleware)
 router.param('id', idValidation)
 
+router.get('/names', asyncWrapper(subjectController.getNamesByCategoryId))
 router.get('/', asyncWrapper(subjectController.getSubjects))
 router.get('/:id', asyncWrapper(subjectController.getSubjectById))
 

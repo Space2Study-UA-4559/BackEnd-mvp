@@ -32,3 +32,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/subject'
+    subjectName:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+    subjectNames:
+      type: array
+      items:
+        $ref: '#/components/schemas/subjectName'

@@ -24,6 +24,10 @@ const subjectService = {
     }
 
     return subject
+  },
+
+  getNamesByCategoryId: async (match) => {
+    return await Subject.find(match).select('name').exec()
   }
 }
 

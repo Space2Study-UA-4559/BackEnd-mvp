@@ -147,6 +147,71 @@ describe('Subject controller', () => {
     })
   })
 
+  describe('test GET /categories/:id?/subjects/names', () => {
+    it('should GET subject names by category id', async () => {
+      const specialCategory = await Category.create({ name: 'specialCategory' })
+      await Subject.create({
+        name: 'specialSubject',
+        category: specialCategory._id
+      })
+
+      const response = await app
+        .get(`/categories/${specialCategory._id}/subjects/names`)
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body).toEqual([
+        expect.objectContaining({
+          _id: expect.any(String),
+          name: 'specialSubject'
+        })
+      ])
+      expect(response.body[0]).not.toHaveProperty('category')
+      expect(response.body[0]).not.toHaveProperty('totalOffers')
+    })
+
+    it('should GET all subject names when category id is omitted', async () => {
+      const specialCategory = await Category.create({ name: 'specialCategory' })
+      await Subject.create({
+        name: 'specialSubject',
+        category: specialCategory._id
+      })
+
+      const response = await app.get('/categories/subjects/names').set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body).toHaveLength(2)
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'testSubject' }),
+          expect.objectContaining({ name: 'specialSubject' })
+        ])
+      )
+    })
+
+    it('should throw UNAUTHORIZED error', async () => {
+      const response = await app.get('/categories/subjects/names')
+
+      expectError(401, UNAUTHORIZED, response)
+    })
+
+    it('should throw INVALID_ID error when category id is invalid', async () => {
+      const response = await app
+        .get('/categories/invalid/subjects/names')
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(400, INVALID_ID, response)
+    })
+
+    it('should throw DOCUMENT_NOT_FOUND error when category does not exist', async () => {
+      const response = await app
+        .get(`/categories/${nonExistingCategoryId}/subjects/names`)
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(404, DOCUMENT_NOT_FOUND([Category.modelName]), response)
+    })
+  })
+
   describe(`test GET ${endpointUrl}:id`, () => {
     it('should GET subject by id', async () => {
       const subject = await Subject.findOne({ name: 'testSubject' }).lean()

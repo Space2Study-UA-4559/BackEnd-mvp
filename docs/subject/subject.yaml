@@ -216,3 +216,88 @@ paths:
                 status: 404
                 code: DOCUMENT_NOT_FOUND
                 message: Category with the specified ID was not found.
+  /categories/subjects/names:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Subjects
+      summary: Get subject names
+      description: Finds and returns a list of subject names without category filter.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subjectNames'
+              example:
+                - _id: 63da8767c9ad4c9a0b0eacd3
+                  name: English
+                - _id: 63da8767c9ad4c9a0b0eacd4
+                  name: Mathematics
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+  /categories/{id}/subjects/names:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Subjects
+      summary: Get subject names by category ID
+      description: Finds and returns a list of subject names filtered by category id.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Category id used to filter subject names.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/subjectNames'
+              example:
+                - _id: 63da8767c9ad4c9a0b0eacd3
+                  name: English
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 400
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: DOCUMENT_NOT_FOUND
+                message: Category with the specified ID was not found.

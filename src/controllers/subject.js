@@ -26,6 +26,15 @@ const subjectController = {
     const subject = await subjectService.getSubjectById(id)
 
     res.status(200).json(subject)
+  },
+
+  getNamesByCategoryId: async (req, res) => {
+    const { id } = req.params
+
+    const match = getMatchOptions({ category: id })
+    const names = await subjectService.getNamesByCategoryId(match)
+
+    res.status(200).json(names)
   }
 }
 
