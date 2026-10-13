@@ -1,6 +1,6 @@
 const { serverCleanup, serverInit, stopServer } = require('~/test/setup')
 const { expectError } = require('~/test/helpers')
-const { DOCUMENT_NOT_FOUND } = require('~/consts/errors')
+const { DOCUMENT_NOT_FOUND, FORBIDDEN } = require('~/consts/errors')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const Offer = require('~/models/offer')
 const Category = require('~/models/category')
@@ -48,7 +48,7 @@ describe('Offer controller', () => {
     const category = { _id: _id.toString(), appearance }
 
     const subjectDoc = await Subject.create({
-      name: 'testSubject',
+      name: 'TestSubject',
       category: _id
     })
     const subject = subjectDoc._id.toString()
@@ -58,7 +58,7 @@ describe('Offer controller', () => {
 
     testOfferResponse = await app.post(endpointUrl).set('Authorization', `Bearer ${accessToken}`).send(testOffer)
 
-    testOffer = testOfferResponse.body
+    testOffer = { ...testOfferResponse.body }
     testOffer.category = category
   })
 
@@ -86,7 +86,7 @@ describe('Offer controller', () => {
           authorRole: 'student',
           author,
           subject,
-          category,
+          category: category._id,
           status: 'active',
           createdAt: expect.any(String),
           updatedAt: expect.any(String)
@@ -158,9 +158,46 @@ describe('Offer controller', () => {
     })
 
     it('should throw DOCUMENT_NOT_FOUND', async () => {
-      const response = await app.get(endpointUrl + nonExistingOfferId).set('Authorization', `Bearer ${accessToken}`)
+      const response = await app.delete(endpointUrl + nonExistingOfferId).set('Authorization', `Bearer ${accessToken}`)
 
       expectError(404, DOCUMENT_NOT_FOUND([Offer.modelName]), response)
+    })
+  })
+
+  describe('Offer filters and permissions', () => {
+    it.each(['category', 'subject'])('filters offers by %s', async (field) => {
+      const otherCategory = await Category.create({ name: 'Other category' })
+      const otherSubject = await Subject.create({ name: 'Other subject', category: otherCategory._id })
+      await Offer.create({ ...testOffer, category: otherCategory._id, subject: otherSubject._id, _id: undefined })
+
+      const id = field === 'category' ? testOffer.category._id : testOffer.subject
+      const response = await app
+        .get(endpointUrl)
+        .query({ [field]: id })
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body.count).toBe(1)
+      expect(response.body.items.map((offer) => offer._id)).toEqual([testOffer._id])
+    })
+
+    it.each(['patch', 'delete'])('forbids another user from %s', async (method) => {
+      const otherToken = await testUserAuthentication(app, {
+        role: 'student',
+        firstName: 'Test',
+        lastName: 'Student',
+        email: 'otherstudent@gmail.com',
+        password: 'Qwerty123@',
+        isEmailConfirmed: true,
+        lastLoginAs: 'student'
+      })
+      const originalOffer = await Offer.findById(testOffer._id).lean()
+      const response = await app[method](endpointUrl + testOffer._id)
+        .set('Authorization', `Bearer ${otherToken}`)
+        .send(updateData)
+
+      expectError(403, FORBIDDEN, response)
+      expect(await Offer.findById(testOffer._id).lean()).toEqual(originalOffer)
     })
   })
 })

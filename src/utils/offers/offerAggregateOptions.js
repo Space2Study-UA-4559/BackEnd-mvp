@@ -9,6 +9,8 @@ const offerAggregateOptions = (query, params) => {
     rating,
     language,
     search,
+    category,
+    subject,
     languages,
     nativeLanguage,
     excludedOfferId,
@@ -73,12 +75,12 @@ const offerAggregateOptions = (query, params) => {
     match['author.nativeLanguage'] = getRegex(nativeLanguage)
   }
 
-  if (categoryId) {
-    match['category._id'] = mongoose.Types.ObjectId(categoryId)
+  if (categoryId || category) {
+    match['category._id'] = mongoose.Types.ObjectId(categoryId || category)
   }
 
-  if (subjectId) {
-    match['subject._id'] = mongoose.Types.ObjectId(subjectId)
+  if (subjectId || subject) {
+    match['subject._id'] = mongoose.Types.ObjectId(subjectId || subject)
   }
 
   if (excludedOfferId) {

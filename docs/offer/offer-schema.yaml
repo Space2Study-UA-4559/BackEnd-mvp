@@ -67,11 +67,14 @@ components:
             format: date-time
     offerBody:
       type: object
+      required: [price, proficiencyLevel, title, description, languages, subject, category]
       properties:
         price:
           type: number
+          minimum: 1
         proficiencyLevel:
           type: array
+          minItems: 1
           items:
             type: string
             enum:
@@ -83,10 +86,15 @@ components:
               - Specialized
         title:
           type: string
+          minLength: 1
+          maxLength: 100
         description:
           type: string
+          minLength: 1
+          maxLength: 1000
         languages:
           type: array
+          minItems: 1
           items:
             type: string
             enum:
@@ -113,6 +121,7 @@ components:
           type: array
           items:
             type: object
+            required: [question, answer]
             properties:
               question:
                 type: string
@@ -125,8 +134,10 @@ components:
           type: string
         price:
           type: number
+          minimum: 1
         proficiencyLevel:
           type: array
+          minItems: 1
           items:
             type: string
             enum:
@@ -138,10 +149,15 @@ components:
               - Specialized
         title:
           type: string
+          minLength: 1
+          maxLength: 100
         description:
           type: string
+          minLength: 1
+          maxLength: 1000
         languages:
           type: array
+          minItems: 1
           items:
             type: string
             enum:
@@ -170,6 +186,7 @@ components:
           type: array
           items:
             type: object
+            required: [question, answer]
             properties:
               question:
                 type: string
