@@ -8,6 +8,7 @@ const {
 } = require('~/consts/auth')
 
 const endpointUrl = '/categories'
+const namesEndpointUrl = `${endpointUrl}/names`
 
 describe('Category controller', () => {
   let app, server, accessToken
@@ -52,5 +53,31 @@ describe('Category controller', () => {
     const response = await app.get(endpointUrl).set('Authorization', `Bearer ${accessToken}`)
     expect(response.status).toBe(200)
     expect(response.body).toEqual([])
+  })
+
+  describe(`GET ${namesEndpointUrl}`, () => {
+    it('Should return category names', async () => {
+      const response = await app.get(namesEndpointUrl).set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual([{ name: 'Test category' }])
+      expect(response.body[0]).not.toHaveProperty('_id')
+      expect(response.body[0]).not.toHaveProperty('appearance')
+    })
+
+    it('Should return an empty array when no categories are found', async () => {
+      await Category.deleteMany({})
+
+      const response = await app.get(namesEndpointUrl).set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual([])
+    })
+
+    it('Should return 401 without an access token', async () => {
+      const response = await app.get(namesEndpointUrl)
+
+      expect(response.status).toBe(401)
+    })
   })
 })

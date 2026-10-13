@@ -27,7 +27,7 @@ PARAMS_ENUM.forEach((param) => {
 })
 
 router.get('/', asyncWrapper(categoryController.getCategories))
-
+router.get('/names', asyncWrapper(categoryController.getCategoriesNames))
 router.get(
   '/:categoryId?/subjects/:subjectId?/price-range',
   isEntityValid({ params: nestedParams }),
