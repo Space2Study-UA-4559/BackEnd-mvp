@@ -25,6 +25,12 @@ const categoryService = {
     const categories = await Category.find()
 
     return categories
+  },
+
+  getCategoriesNames: async () => {
+    const categoryNames = await Category.find({}, { name: 1, _id: 0 })
+
+    return categoryNames
   }
 }
 
