@@ -48,3 +48,35 @@ paths:
                 status: 404
                 code: NOT_FOUND
                 message: The requested URL was not found.
+  '/categories':
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get all categories
+      description: Retrieves a list of all categories.
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/category'
+              example:
+                - name: Mathematics
+                  appearance:
+                    icon: mocked-path-to-icon
+                    color: '#66C42C'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
