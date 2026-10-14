@@ -1,8 +1,10 @@
 /// <reference types="jest" />
 
 const { serverInit, serverCleanup, stopServer } = require('~/test/setup')
+const { expectError } = require('~/test/helpers')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const Category = require('~/models/category')
+const { INVALID_ID, DOCUMENT_NOT_FOUND } = require('~/consts/errors')
 const {
   roles: { STUDENT }
 } = require('~/consts/auth')
@@ -76,6 +78,43 @@ describe('Category controller', () => {
 
     it('Should return 401 without an access token', async () => {
       const response = await app.get(namesEndpointUrl)
+
+      expect(response.status).toBe(401)
+    })
+  })
+
+  describe(`GET ${endpointUrl}/:id`, () => {
+    it('Should return a category by ID', async () => {
+      const category = await Category.findOne({ name: 'Test category' })
+
+      const response = await app.get(`${endpointUrl}/${category._id}`).set('Authorization', `Bearer ${accessToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toMatchObject({
+        _id: category._id.toString(),
+        name: 'Test category'
+      })
+    })
+
+    it('Should return 404 when a category does not exist', async () => {
+      const category = await Category.create({ name: 'Deleted category' })
+      await Category.findByIdAndDelete(category._id)
+
+      const response = await app.get(`${endpointUrl}/${category._id}`).set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(404, DOCUMENT_NOT_FOUND([Category.modelName]), response)
+    })
+
+    it('Should return 400 for an invalid category ID', async () => {
+      const response = await app.get(`${endpointUrl}/invalid-id`).set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(400, INVALID_ID, response)
+    })
+
+    it('Should return 401 without an access token', async () => {
+      const category = await Category.findOne({ name: 'Test category' })
+
+      const response = await app.get(`${endpointUrl}/${category._id}`)
 
       expect(response.status).toBe(401)
     })
