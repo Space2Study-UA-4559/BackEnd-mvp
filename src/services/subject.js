@@ -28,6 +28,12 @@ const subjectService = {
 
   getNamesByCategoryId: async (match) => {
     return await Subject.find(match).select('name').exec()
+  },
+
+  createSubject: async (subjectData) => {
+    const { name, category } = subjectData
+
+    return await Subject.create({ name, category })
   }
 }
 

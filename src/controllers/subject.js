@@ -35,6 +35,14 @@ const subjectController = {
     const names = await subjectService.getNamesByCategoryId(match)
 
     res.status(200).json(names)
+  },
+
+  createSubject: async (req, res) => {
+    const data = req.body
+
+    const subject = await subjectService.createSubject(data)
+
+    res.status(201).json(subject)
   }
 }
 

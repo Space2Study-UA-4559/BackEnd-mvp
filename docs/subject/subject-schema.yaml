@@ -43,3 +43,14 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/subjectName'
+    subjectBody:
+      type: object
+      required:
+        - name
+        - category
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          description: Category ObjectId reference.

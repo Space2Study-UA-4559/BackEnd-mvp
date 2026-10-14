@@ -2,12 +2,30 @@ const { serverInit, serverCleanup, stopServer } = require('~/test/setup')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const Category = require('~/models/category')
 const Subject = require('~/models/subject')
-const { UNAUTHORIZED, INVALID_ID, DOCUMENT_NOT_FOUND } = require('~/consts/errors')
+const {
+  UNAUTHORIZED,
+  FORBIDDEN,
+  INVALID_ID,
+  DOCUMENT_NOT_FOUND,
+  DOCUMENT_ALREADY_EXISTS
+} = require('~/consts/errors')
 const { expectError } = require('~/test/helpers')
 
 const endpointUrl = '/subjects/'
 const nonExistingCategoryId = '6329a45601bd35b5fff1cf8c'
 const nonExistingSubjectId = '6329a45601bd35b5fff1cf8d'
+
+const adminUser = {
+  role: ['admin'],
+  firstName: 'TestAdmin',
+  lastName: 'AdminTest',
+  email: 'testadmin@gmail.com',
+  password: 'supersecretpass123',
+  appLanguage: 'en',
+  isEmailConfirmed: true,
+  isFirstLogin: false,
+  lastLoginAs: 'admin'
+}
 
 describe('Subject controller', () => {
   let app, server, accessToken
@@ -247,6 +265,92 @@ describe('Subject controller', () => {
       const response = await app.get(endpointUrl + nonExistingSubjectId).set('Authorization', `Bearer ${accessToken}`)
 
       expectError(404, DOCUMENT_NOT_FOUND([Subject.modelName]), response)
+    })
+  })
+
+  describe(`test POST ${endpointUrl}`, () => {
+    let adminAccessToken
+
+    beforeEach(async () => {
+      adminAccessToken = await testUserAuthentication(app, adminUser)
+    })
+
+    it('should create a new subject', async () => {
+      const category = await Category.findOne({ name: 'testCategory' })
+
+      const response = await app
+        .post(endpointUrl)
+        .send({ name: 'English', category: category._id })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expect(response.statusCode).toBe(201)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          _id: expect.any(String),
+          name: 'English',
+          category: category._id.toString(),
+          totalOffers: { student: 0, tutor: 0 },
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String)
+        })
+      )
+    })
+
+    it('should throw UNAUTHORIZED error', async () => {
+      const category = await Category.findOne({ name: 'testCategory' })
+
+      const response = await app.post(endpointUrl).send({ name: 'English', category: category._id })
+
+      expectError(401, UNAUTHORIZED, response)
+    })
+
+    it('should throw FORBIDDEN error for non-admin user', async () => {
+      const category = await Category.findOne({ name: 'testCategory' })
+
+      const response = await app
+        .post(endpointUrl)
+        .send({ name: 'English', category: category._id })
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(403, FORBIDDEN, response)
+    })
+
+    it('should throw DOCUMENT_NOT_FOUND error when category does not exist', async () => {
+      const response = await app
+        .post(endpointUrl)
+        .send({ name: 'English', category: nonExistingCategoryId })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expectError(404, DOCUMENT_NOT_FOUND([Category.modelName]), response)
+    })
+
+    it('should throw VALIDATION_ERROR when name is missing', async () => {
+      const category = await Category.findOne({ name: 'testCategory' })
+
+      const response = await app
+        .post(endpointUrl)
+        .send({ category: category._id })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expect(response.statusCode).toBe(409)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          status: 409,
+          code: 'VALIDATION_ERROR'
+        })
+      )
+    })
+
+    it('should throw DOCUMENT_ALREADY_EXISTS when subject name is duplicated', async () => {
+      const category = await Category.findOne({ name: 'testCategory' })
+      await Subject.syncIndexes()
+
+      const response = await app
+        .post(endpointUrl)
+        .send({ name: 'testSubject', category: category._id })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expectError(409, DOCUMENT_ALREADY_EXISTS('name'), response)
     })
   })
 })
