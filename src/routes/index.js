@@ -13,6 +13,7 @@ const cooperation = require('~/routes/cooperation')
 const comment = require('~/routes/comment')
 const question = require('~/routes/question')
 const resourcesCategory = require('~/routes/resourcesCategory')
+const lesson = require('~/routes/lesson')
 
 router.use('/auth', auth)
 router.use('/users', user)
@@ -27,5 +28,6 @@ router.use('/cooperations', cooperation)
 router.use('/comments', comment)
 router.use('/questions', question)
 router.use('/resources-categories', resourcesCategory)
+router.use('/lessons', lesson)
 
 module.exports = router
