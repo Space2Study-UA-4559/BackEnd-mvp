@@ -1,0 +1,50 @@
+components:
+  schemas:
+    lesson:
+      type: object
+      required:
+        - title
+        - description
+        - content
+        - author
+      properties:
+        _id:
+          type: string
+          example: 64ebc6fbd2f34037d0aba791
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Introduction to chemistry
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: Basic concepts and terminology.
+        content:
+          type: string
+          minLength: 50
+          example: This lesson introduces the fundamental concepts and terminology of chemistry.
+        author:
+          type: string
+          example: 64ebc6fbd2f34037d0aba792
+        category:
+          type: string
+          nullable: true
+          default: null
+          example: 64ebc6fbd2f34037d0aba793
+        resourceType:
+          type: string
+          enum:
+            - lessons
+            - attachments
+            - questions
+            - quizzes
+          default: lessons
+          example: lessons
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
