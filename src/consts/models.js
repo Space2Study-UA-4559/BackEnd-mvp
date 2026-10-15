@@ -9,6 +9,7 @@ const refs = {
   COOPERATION: 'Cooperation',
   COMMENT: 'Comment',
   QUESTION: 'Question',
+  LESSON: 'Lesson',
   RESOURCES_CATEGORY: 'ResourcesCategory'
 }
 
