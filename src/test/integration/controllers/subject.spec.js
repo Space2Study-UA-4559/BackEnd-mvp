@@ -353,4 +353,84 @@ describe('Subject controller', () => {
       expectError(409, DOCUMENT_ALREADY_EXISTS('name'), response)
     })
   })
+
+  describe(`test PATCH ${endpointUrl}:id`, () => {
+    let adminAccessToken
+
+    beforeEach(async () => {
+      adminAccessToken = await testUserAuthentication(app, adminUser)
+    })
+
+    it('should update a subject', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+      const newCategory = await Category.create({ name: 'newCategory' })
+
+      const response = await app
+        .patch(endpointUrl + subject._id)
+        .send({ name: 'UpdatedSubject', category: newCategory._id })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expect(response.statusCode).toBe(204)
+
+      const updatedSubject = await Subject.findById(subject._id).lean()
+      expect(updatedSubject.name).toBe('UpdatedSubject')
+      expect(updatedSubject.category.toString()).toBe(newCategory._id.toString())
+    })
+
+    it('should throw UNAUTHORIZED error', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app.patch(endpointUrl + subject._id).send({ name: 'UpdatedSubject' })
+
+      expectError(401, UNAUTHORIZED, response)
+    })
+
+    it('should throw FORBIDDEN error for non-admin user', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app
+        .patch(endpointUrl + subject._id)
+        .send({ name: 'UpdatedSubject' })
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(403, FORBIDDEN, response)
+    })
+
+    it('should throw DOCUMENT_NOT_FOUND error when subject does not exist', async () => {
+      const response = await app
+        .patch(endpointUrl + nonExistingSubjectId)
+        .send({ name: 'UpdatedSubject' })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expectError(404, DOCUMENT_NOT_FOUND([Subject.modelName]), response)
+    })
+
+    it('should throw DOCUMENT_NOT_FOUND error when category does not exist', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app
+        .patch(endpointUrl + subject._id)
+        .send({ category: nonExistingCategoryId })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expectError(404, DOCUMENT_NOT_FOUND([Category.modelName]), response)
+    })
+
+    it('should throw VALIDATION_ERROR when name is empty', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app
+        .patch(endpointUrl + subject._id)
+        .send({ name: '' })
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expect(response.statusCode).toBe(409)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          status: 409,
+          code: 'VALIDATION_ERROR'
+        })
+      )
+    })
+  })
 })

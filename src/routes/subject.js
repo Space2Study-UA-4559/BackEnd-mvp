@@ -18,5 +18,6 @@ router.get('/names', asyncWrapper(subjectController.getNamesByCategoryId))
 router.get('/', asyncWrapper(subjectController.getSubjects))
 router.get('/:id', asyncWrapper(subjectController.getSubjectById))
 router.post('/', restrictTo(ADMIN), isEntityValid({ body }), asyncWrapper(subjectController.createSubject))
+router.patch('/:id', restrictTo(ADMIN), isEntityValid({ body }), asyncWrapper(subjectController.updateSubject))
 
 module.exports = router

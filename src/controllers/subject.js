@@ -43,6 +43,15 @@ const subjectController = {
     const subject = await subjectService.createSubject(data)
 
     res.status(201).json(subject)
+  },
+
+  updateSubject: async (req, res) => {
+    const { id } = req.params
+    const data = req.body
+
+    await subjectService.updateSubject(id, data)
+
+    res.status(204).end()
   }
 }
 

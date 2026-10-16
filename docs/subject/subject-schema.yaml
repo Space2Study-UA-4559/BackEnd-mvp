@@ -54,3 +54,11 @@ components:
         category:
           type: string
           description: Category ObjectId reference.
+    subjectUpdateBody:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+          description: Category ObjectId reference.
