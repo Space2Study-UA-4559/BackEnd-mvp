@@ -433,4 +433,59 @@ describe('Subject controller', () => {
       )
     })
   })
+
+  describe(`test DELETE ${endpointUrl}:id`, () => {
+    let adminAccessToken
+
+    beforeEach(async () => {
+      adminAccessToken = await testUserAuthentication(app, adminUser)
+    })
+
+    it('should delete a subject', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app
+        .delete(endpointUrl + subject._id)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expect(response.statusCode).toBe(204)
+
+      const deletedSubject = await Subject.findById(subject._id).lean()
+      expect(deletedSubject).toBeNull()
+    })
+
+    it('should throw UNAUTHORIZED error', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app.delete(endpointUrl + subject._id)
+
+      expectError(401, UNAUTHORIZED, response)
+    })
+
+    it('should throw FORBIDDEN error for non-admin user', async () => {
+      const subject = await Subject.findOne({ name: 'testSubject' })
+
+      const response = await app
+        .delete(endpointUrl + subject._id)
+        .set('Authorization', `Bearer ${accessToken}`)
+
+      expectError(403, FORBIDDEN, response)
+    })
+
+    it('should throw INVALID_ID error when subject id is invalid', async () => {
+      const response = await app
+        .delete(endpointUrl + 'invalid')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expectError(400, INVALID_ID, response)
+    })
+
+    it('should throw DOCUMENT_NOT_FOUND error when subject does not exist', async () => {
+      const response = await app
+        .delete(endpointUrl + nonExistingSubjectId)
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+
+      expectError(404, DOCUMENT_NOT_FOUND([Subject.modelName]), response)
+    })
+  })
 })

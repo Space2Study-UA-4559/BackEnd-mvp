@@ -52,6 +52,14 @@ const subjectController = {
     await subjectService.updateSubject(id, data)
 
     res.status(204).end()
+  },
+
+  deleteSubject: async (req, res) => {
+    const { id } = req.params
+
+    await subjectService.deleteSubject(id)
+
+    res.status(204).end()
   }
 }
 

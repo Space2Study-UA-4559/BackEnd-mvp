@@ -51,6 +51,14 @@ const subjectService = {
       subject[field] = filteredUpdateData[field]
     }
     await subject.save()
+  },
+
+  deleteSubject: async (id) => {
+    const subject = await Subject.findByIdAndRemove(id).exec()
+
+    if (!subject) {
+      throw createError(404, DOCUMENT_NOT_FOUND([Subject.modelName]))
+    }
   }
 }
 
