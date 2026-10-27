@@ -1,0 +1,74 @@
+paths:
+  '/lessons/{id}':
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - Lessons
+      summary: Find and return lesson by ID
+      description: Finds and returns a lesson with the specified ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the lesson to fetch
+          schema:
+            type: string
+          example: 64ebc6fbd2f34037d0aba791
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lesson'
+              example:
+                _id: 64ebc6fbd2f34037d0aba791
+                title: Introduction to chemistry
+                description: Basic concepts and terminology.
+                content: This lesson introduces the fundamental concepts and terminology of chemistry.
+                author: 64ebc6fbd2f34037d0aba792
+                category: null
+                resourceType: lessons
+                createdAt: 2026-10-15T12:00:00.000Z
+                updatedAt: 2026-10-15T12:00:00.000Z
+        '400':
+          description: Invalid lesson ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 400
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
+          description: Lesson not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: DOCUMENT_NOT_FOUND
+                message: Lesson with the specified ID was not found.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 500
+                code: INTERNAL_SERVER_ERROR
+                message: Internal server error.
