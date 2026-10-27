@@ -1,5 +1,8 @@
 const router = require('express').Router()
-const { authMiddleware } = require('~/middlewares/auth')
+const { authMiddleware, restrictTo } = require('~/middlewares/auth')
+const {
+  roles: { ADMIN }
+} = require('~/consts/auth')
 const idValidation = require('~/middlewares/idValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const isEntityValid = require('~/middlewares/entityValidation')
@@ -19,6 +22,8 @@ const nestedParams = [
 const params = [{ model: Category, idName: 'id' }]
 
 router.use(authMiddleware)
+
+router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCategory))
 
 PARAMS_ENUM.forEach((param) => {
   router.param(param, idValidation)

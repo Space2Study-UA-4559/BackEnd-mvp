@@ -4,6 +4,12 @@ const Category = require('~/models/category')
 const { createError } = require('~/utils/errorsHelper')
 const { DOCUMENT_NOT_FOUND } = require('~/consts/errors')
 const categoryService = {
+  createCategory: async (data) => {
+    const { name, appearance } = data
+
+    return await Category.create({ name, appearance })
+  },
+
   priceMinMax: async (searchParams) => {
     const matchCondition = conditionCreator.condition(searchParams)
 

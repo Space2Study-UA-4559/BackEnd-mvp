@@ -143,6 +143,52 @@ paths:
                 code: DOCUMENT_NOT_FOUND
                 message: Category with the specified ID was not found.
   '/categories':
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Categories
+      summary: Create a category
+      description: Create category with provided data. Accessible only to an admin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/category'
+            example:
+              name: Test Category
+      responses:
+        '201':
+          description: Category created and saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     get:
       security:
         - bearerAuth: []
