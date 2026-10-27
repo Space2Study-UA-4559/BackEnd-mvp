@@ -126,7 +126,7 @@ describe('Offer controller', () => {
         },
         subject: {
           _id: testOffer.subject,
-          name: 'TestSubject'
+          name: 'testSubject'
         }
       })
       expect(response.statusCode).toBe(200)
