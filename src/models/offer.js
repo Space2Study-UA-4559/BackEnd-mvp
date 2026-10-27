@@ -5,28 +5,48 @@ const {
   enums: { MAIN_ROLE_ENUM, SPOKEN_LANG_ENUM, PROFICIENCY_LEVEL_ENUM, OFFER_STATUS_ENUM }
 } = require('~/consts/validation')
 const { USER, SUBJECT, CATEGORY, OFFER } = require('~/consts/models')
-const { ENUM_CAN_BE_ONE_OF } = require('~/consts/errors')
+const {
+  ENUM_CAN_BE_ONE_OF,
+  FIELD_CANNOT_BE_EMPTY,
+  FIELD_CANNOT_BE_SHORTER,
+  FIELD_CANNOT_BE_LONGER,
+  VALUE_MUST_BE_ABOVE
+} = require('~/consts/errors')
 
 const offerSchema = new Schema(
   {
     price: {
-      type: Number
+      type: Number,
+      required: [true, FIELD_CANNOT_BE_EMPTY('price')],
+      min: [1, VALUE_MUST_BE_ABOVE('price', 1)]
     },
     proficiencyLevel: {
       type: [String],
+      required: [true, FIELD_CANNOT_BE_EMPTY('proficiency level')],
+      validate: [(levels) => levels.length > 0, FIELD_CANNOT_BE_EMPTY('proficiency level')],
       enum: {
         values: PROFICIENCY_LEVEL_ENUM,
         message: ENUM_CAN_BE_ONE_OF('proficiency level', PROFICIENCY_LEVEL_ENUM)
       }
     },
     title: {
-      type: String
+      type: String,
+      required: [true, FIELD_CANNOT_BE_EMPTY('title')],
+      trim: true,
+      minLength: [1, FIELD_CANNOT_BE_SHORTER('title', 1)],
+      maxLength: [100, FIELD_CANNOT_BE_LONGER('title', 100)]
     },
     description: {
-      type: String
+      type: String,
+      required: [true, FIELD_CANNOT_BE_EMPTY('description')],
+      trim: true,
+      minLength: [1, FIELD_CANNOT_BE_SHORTER('description', 1)],
+      maxLength: [1000, FIELD_CANNOT_BE_LONGER('description', 1000)]
     },
     languages: {
       type: [String],
+      required: [true, FIELD_CANNOT_BE_EMPTY('languages')],
+      validate: [(languages) => languages.length > 0, FIELD_CANNOT_BE_EMPTY('languages')],
       enum: {
         values: SPOKEN_LANG_ENUM,
         message: ENUM_CAN_BE_ONE_OF('language', SPOKEN_LANG_ENUM)
@@ -34,6 +54,7 @@ const offerSchema = new Schema(
     },
     authorRole: {
       type: String,
+      required: [true, FIELD_CANNOT_BE_EMPTY('author role')],
       enum: {
         values: MAIN_ROLE_ENUM,
         message: ENUM_CAN_BE_ONE_OF('author role', MAIN_ROLE_ENUM)
@@ -41,15 +62,18 @@ const offerSchema = new Schema(
     },
     author: {
       type: Schema.Types.ObjectId,
-      ref: USER
+      ref: USER,
+      required: [true, FIELD_CANNOT_BE_EMPTY('author')]
     },
     subject: {
       type: Schema.Types.ObjectId,
-      ref: SUBJECT
+      ref: SUBJECT,
+      required: [true, FIELD_CANNOT_BE_EMPTY('subject')]
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: CATEGORY
+      ref: CATEGORY,
+      required: [true, FIELD_CANNOT_BE_EMPTY('category')]
     },
     status: {
       type: String,
@@ -63,10 +87,14 @@ const offerSchema = new Schema(
       type: [
         {
           question: {
-            type: String
+            type: String,
+            required: [true, FIELD_CANNOT_BE_EMPTY('question')],
+            trim: true
           },
           answer: {
-            type: String
+            type: String,
+            required: [true, FIELD_CANNOT_BE_EMPTY('answer')],
+            trim: true
           }
         }
       ]
@@ -89,7 +117,7 @@ offerSchema.statics.calcTotalOffers = async function (category, subject, authorR
 }
 
 offerSchema.post('save', async function (doc) {
-  doc.constructor.calcTotalOffers(doc.category, doc.subject, doc.authorRole)
+  await doc.constructor.calcTotalOffers(doc.category, doc.subject, doc.authorRole)
 })
 
 module.exports = model(OFFER, offerSchema)
