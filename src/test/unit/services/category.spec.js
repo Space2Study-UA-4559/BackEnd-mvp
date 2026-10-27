@@ -1,5 +1,7 @@
 jest.mock('~/models/category', () => ({
-  find: jest.fn()
+  find: jest.fn(),
+  findById: jest.fn(),
+  modelName: 'Category'
 }))
 
 const Category = require('~/models/category')
@@ -63,6 +65,43 @@ describe('Categories service', () => {
       Category.find.mockRejectedValue(new Error('Test error'))
 
       await expect(categoryService.getCategoriesNames()).rejects.toThrow('Test error')
+    })
+  })
+
+  describe('getCategoryById', () => {
+    const categoryId = '507f1f77bcf86cd799439011'
+
+    it('Should request a category by ID', async () => {
+      Category.findById.mockResolvedValue({ _id: categoryId, name: 'Math' })
+
+      await categoryService.getCategoryById(categoryId)
+
+      expect(Category.findById).toHaveBeenCalledWith(categoryId)
+    })
+
+    it('Should return a category', async () => {
+      const category = { _id: categoryId, name: 'Math' }
+      Category.findById.mockResolvedValue(category)
+
+      const result = await categoryService.getCategoryById(categoryId)
+
+      expect(result).toEqual(category)
+    })
+
+    it('Should throw DOCUMENT_NOT_FOUND when a category does not exist', async () => {
+      Category.findById.mockResolvedValue(null)
+
+      await expect(categoryService.getCategoryById(categoryId)).rejects.toMatchObject({
+        status: 404,
+        code: 'DOCUMENT_NOT_FOUND',
+        message: 'Category with the specified ID was not found.'
+      })
+    })
+
+    it('Should reject when retrieving a category fails', async () => {
+      Category.findById.mockRejectedValue(new Error('Test error'))
+
+      await expect(categoryService.getCategoryById(categoryId)).rejects.toThrow('Test error')
     })
   })
 })

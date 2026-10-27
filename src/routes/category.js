@@ -1,10 +1,8 @@
 const router = require('express').Router()
-
 const { authMiddleware } = require('~/middlewares/auth')
 const idValidation = require('~/middlewares/idValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const isEntityValid = require('~/middlewares/entityValidation')
-
 const categoryController = require('~/controllers/category')
 const subjectRouter = require('~/routes/subject')
 const offerRouter = require('~/routes/offer')
@@ -28,6 +26,8 @@ PARAMS_ENUM.forEach((param) => {
 
 router.get('/', asyncWrapper(categoryController.getCategories))
 router.get('/names', asyncWrapper(categoryController.getCategoriesNames))
+router.get('/:id', asyncWrapper(categoryController.getCategoryById))
+
 router.get(
   '/:categoryId?/subjects/:subjectId?/price-range',
   isEntityValid({ params: nestedParams }),

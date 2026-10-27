@@ -1,7 +1,8 @@
 const Offer = require('~/models/offer')
 const conditionCreator = require('~/utils/categories/conditionCreator')
 const Category = require('~/models/category')
-
+const { createError } = require('~/utils/errorsHelper')
+const { DOCUMENT_NOT_FOUND } = require('~/consts/errors')
 const categoryService = {
   priceMinMax: async (searchParams) => {
     const matchCondition = conditionCreator.condition(searchParams)
@@ -31,6 +32,13 @@ const categoryService = {
     const categoryNames = await Category.find({}, { name: 1, _id: 0 })
 
     return categoryNames
+  },
+  getCategoryById: async (id) => {
+    const category = await Category.findById(id)
+    if (!category) {
+      throw createError(404, DOCUMENT_NOT_FOUND([Category.modelName]))
+    }
+    return category
   }
 }
 
