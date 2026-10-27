@@ -11,8 +11,8 @@ const Category = require('~/models/category')
 const Subject = require('~/models/subject')
 
 const body = [
-  { model: Category, idName: 'categoryId' },
-  { model: Subject, idName: 'subjectId' }
+  { model: Category, idName: 'category' },
+  { model: Subject, idName: 'subject' }
 ]
 const params = [{ model: Offer, idName: 'id' }]
 

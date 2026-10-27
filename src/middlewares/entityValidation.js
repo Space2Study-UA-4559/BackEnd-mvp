@@ -2,7 +2,7 @@ const { DOCUMENT_NOT_FOUND } = require('~/consts/errors')
 const { createError } = require('~/utils/errorsHelper')
 
 const isEntityValid = (entities) => {
-  return async (req, _res, next) => {
+  const validate = async (req, _res, next) => {
     const models = []
 
     let id = null
@@ -44,11 +44,13 @@ const isEntityValid = (entities) => {
     }
 
     if (models.length) {
-      next(createError(404, DOCUMENT_NOT_FOUND(models)))
+      return next(createError(404, DOCUMENT_NOT_FOUND(models)))
     }
 
     next()
   }
+
+  return (req, res, next) => validate(req, res, next).catch(next)
 }
 
 module.exports = isEntityValid
