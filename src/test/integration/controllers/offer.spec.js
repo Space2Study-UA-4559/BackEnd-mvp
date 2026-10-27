@@ -48,7 +48,7 @@ describe('Offer controller', () => {
     const category = { _id: _id.toString(), appearance }
 
     const subjectDoc = await Subject.create({
-      name: 'TestSubject',
+      name: 'testSubject',
       category: _id
     })
     const subject = subjectDoc._id.toString()
@@ -126,7 +126,7 @@ describe('Offer controller', () => {
         },
         subject: {
           _id: testOffer.subject,
-          name: 'TestSubject'
+          name: 'testSubject'
         }
       })
       expect(response.statusCode).toBe(200)

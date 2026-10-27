@@ -41,7 +41,13 @@ const resourcesCategoryService = {
     await resourceCategory.save()
   },
 
-  deleteResourceCategory: async (id) => {
+  deleteResourceCategory: async (id, currentUserId) => {
+    const resourceCategory = await ResourcesCategory.findById(id).exec()
+
+    if (resourceCategory.author.toString() !== currentUserId) {
+      throw createForbiddenError()
+    }
+
     await ResourcesCategory.findByIdAndRemove(id).exec()
   }
 }

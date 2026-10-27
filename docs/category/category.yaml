@@ -48,3 +48,175 @@ paths:
                 status: 404
                 code: NOT_FOUND
                 message: The requested URL was not found.
+  '/categories/names':
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get all category names
+      description: Retrieves a list containing only category names.
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - name
+                  properties:
+                    name:
+                      type: string
+              example:
+                - name: Mathematics
+                - name: Languages
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+  '/categories/{id}':
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get a category by ID
+      description: Retrieves the details of a single category by its unique identifier.
+      tags:
+        - Categories
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the category.
+          schema:
+            type: string
+            example: 507f1f77bcf86cd799439011
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category'
+              example:
+                _id: 507f1f77bcf86cd799439011
+                name: Mathematics
+                appearance:
+                  icon: mocked-path-to-icon
+                  color: '#66C42C'
+        '400':
+          description: Invalid category ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 400
+                code: INVALID_ID
+                message: ID is invalid.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 404
+                code: DOCUMENT_NOT_FOUND
+                message: Category with the specified ID was not found.
+  '/categories':
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Categories
+      summary: Create a category
+      description: Create category with provided data. Accessible only to an admin.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/category'
+            example:
+              name: Test Category
+      responses:
+        '201':
+          description: Category created and saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/category'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get all categories
+      description: Retrieves a list of all categories.
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/category'
+              example:
+                - name: Mathematics
+                  appearance:
+                    icon: mocked-path-to-icon
+                    color: '#66C42C'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                status: 401
+                code: UNAUTHORIZED
+                message: The requested URL requires user authorization.

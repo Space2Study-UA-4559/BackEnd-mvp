@@ -3,6 +3,7 @@ const { expectError } = require('~/test/helpers')
 const { UNAUTHORIZED, FORBIDDEN } = require('~/consts/errors')
 const testUserAuthentication = require('~/utils/testUserAuth')
 const TokenService = require('~/services/token')
+const ResourceCategory = require('~/models/resourcesCategory')
 const {
   roles: { TUTOR }
 } = require('~/consts/auth')
@@ -104,6 +105,28 @@ describe('ResourceCategory controller', () => {
       const response = await app
         .patch(endpointUrl)
         .send(updateResourceCategoryData)
+        .set('Authorization', `Bearer ${studentAccessToken}`)
+
+      expectError(403, FORBIDDEN, response)
+    })
+  })
+
+  describe(`DELETE ${endpointUrl}:id`, () => {
+    it('should delete own resource category as a student', async () => {
+      const student = TokenService.validateAccessToken(studentAccessToken)
+      const category = await ResourceCategory.create({ ...testResourceCategoryData, author: student.id })
+
+      const response = await app
+        .delete(endpointUrl + category._id)
+        .set('Authorization', `Bearer ${studentAccessToken}`)
+
+      expect(response.statusCode).toBe(204)
+      await expect(ResourceCategory.findById(category._id)).resolves.toBeNull()
+    })
+
+    it('should throw FORBIDDEN when deleting another user resource category', async () => {
+      const response = await app
+        .delete(endpointUrl + testResourceCategory.body._id)
         .set('Authorization', `Bearer ${studentAccessToken}`)
 
       expectError(403, FORBIDDEN, response)
