@@ -8,7 +8,12 @@ const priceMinMax = async (req, res) => {
 
   res.status(200).json(values)
 }
+const getCategories = async (_req, res) => {
+  const categories = await categoryService.getCategories()
 
+  res.status(200).json(categories)
+}
 module.exports = {
-  priceMinMax
+  priceMinMax,
+  getCategories
 }

@@ -1,5 +1,6 @@
 const Offer = require('~/models/offer')
 const conditionCreator = require('~/utils/categories/conditionCreator')
+const Category = require('~/models/category')
 
 const categoryService = {
   priceMinMax: async (searchParams) => {
@@ -18,6 +19,12 @@ const categoryService = {
     if (!minMaxPrices.length) minMaxPrices[0] = { min: 0, max: 0 }
 
     return { minPrice: minMaxPrices[0].min, maxPrice: minMaxPrices[0].max }
+  },
+
+  getCategories: async () => {
+    const categories = await Category.find()
+
+    return categories
   }
 }
 

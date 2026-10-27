@@ -26,6 +26,8 @@ PARAMS_ENUM.forEach((param) => {
   router.param(param, idValidation)
 })
 
+router.get('/', asyncWrapper(categoryController.getCategories))
+
 router.get(
   '/:categoryId?/subjects/:subjectId?/price-range',
   isEntityValid({ params: nestedParams }),
