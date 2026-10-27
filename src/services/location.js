@@ -1,19 +1,32 @@
+const {
+  config: { CSC_API_KEY }
+} = require('~/configs/config')
+
 const { request } = require('gaxios')
 
-const API_URL = 'https://countriesnow.space/api/v0.1'
+const OLD_API_URL = 'https://countriesnow.space/api/v0.1'
+const CSC_API_URL = 'https://api.countrystatecity.in/v1'
 
 const locationService = {
   getCountries: async () => {
-    const res = await request({ url: `${API_URL}/countries/states` })
-    const countries = res.data.data.map((country) => country.name)
+    const res = await request({
+      url: `${CSC_API_URL}/countries`,
+      headers: {
+        'X-CSCAPI-KEY': CSC_API_KEY
+      }
+    })
+    const countries = res.data.map((country) => ({
+      name: country.name,
+      iso2: country.iso2
+    }))
 
-    return [...new Set(countries)]
+    return countries
   },
 
   getCities: async (country) => {
     const res = await request({
       method: 'POST',
-      url: `${API_URL}/countries/cities`,
+      url: `${OLD_API_URL}/countries/cities`,
       data: { country }
     })
 

@@ -1,44 +1,143 @@
+jest.mock('~/models/category', () => ({
+  find: jest.fn(),
+  findById: jest.fn(),
+  create: jest.fn(),
+  modelName: 'Category'
+}))
+
 const Category = require('~/models/category')
 const categoryService = require('~/services/category')
 
-jest.mock('~/models/category', () => ({ create: jest.fn() }))
-jest.mock('~/models/offer', () => ({}))
-
-describe('Category service: createCategory', () => {
+describe('Categories service', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
+  it('Should run Category.find()', async () => {
+    Category.find.mockResolvedValue([])
+    await categoryService.getCategories()
+    expect(Category.find).toHaveBeenCalledTimes(1)
+    expect(Category.find).toHaveBeenCalledWith()
+  })
+  it('Service should return categories', async () => {
+    const categories = ['Math', 'English', 'Nature']
+    Category.find.mockResolvedValue(categories)
+    const result = await categoryService.getCategories()
+    expect(result).toEqual(categories)
+  })
+  it('Should return an empty array when no categories are found', async () => {
+    const categories = []
+    Category.find.mockResolvedValue(categories)
+    const result = await categoryService.getCategories()
+    expect(result).toEqual(categories)
+  })
+  it('Should return error', async () => {
+    const testError = new Error('Test error')
+    Category.find.mockRejectedValue(testError)
+    await expect(categoryService.getCategories()).rejects.toThrow('Test error')
+  })
 
-  it('passes only name and appearance to the model and returns the created category', async () => {
-    const appearance = { icon: '/icons/test.svg', color: '#123456' }
-    const saved = { _id: 'category-id', name: 'Test Category', appearance }
-    Category.create.mockResolvedValue(saved)
+  describe('getCategoriesNames', () => {
+    it('Should request only category names', async () => {
+      Category.find.mockResolvedValue([])
 
-    const result = await categoryService.createCategory({
-      name: 'Test Category',
-      appearance,
-      _id: 'client-supplied-id',
-      createdAt: '2000-01-01',
-      extra: 'ignored'
+      await categoryService.getCategoriesNames()
+
+      expect(Category.find).toHaveBeenCalledWith({}, { name: 1, _id: 0 })
     })
 
-    expect(Category.create).toHaveBeenCalledWith({ name: 'Test Category', appearance })
-    expect(result).toBe(saved)
+    it('Should return category names', async () => {
+      const categoryNames = [{ name: 'Math' }, { name: 'English' }]
+      Category.find.mockResolvedValue(categoryNames)
+
+      const result = await categoryService.getCategoriesNames()
+
+      expect(result).toEqual(categoryNames)
+    })
+
+    it('Should return an empty array when no category names are found', async () => {
+      Category.find.mockResolvedValue([])
+
+      const result = await categoryService.getCategoriesNames()
+
+      expect(result).toEqual([])
+    })
+
+    it('Should reject when retrieving category names fails', async () => {
+      Category.find.mockRejectedValue(new Error('Test error'))
+
+      await expect(categoryService.getCategoriesNames()).rejects.toThrow('Test error')
+    })
   })
 
-  it('leaves omitted appearance to the model defaults', async () => {
-    await categoryService.createCategory({ name: 'Test Category' })
+  describe('getCategoryById', () => {
+    const categoryId = '507f1f77bcf86cd799439011'
 
-    expect(Category.create).toHaveBeenCalledWith({ name: 'Test Category' })
+    it('Should request a category by ID', async () => {
+      Category.findById.mockResolvedValue({ _id: categoryId, name: 'Math' })
+
+      await categoryService.getCategoryById(categoryId)
+
+      expect(Category.findById).toHaveBeenCalledWith(categoryId)
+    })
+
+    it('Should return a category', async () => {
+      const category = { _id: categoryId, name: 'Math' }
+      Category.findById.mockResolvedValue(category)
+
+      const result = await categoryService.getCategoryById(categoryId)
+
+      expect(result).toEqual(category)
+    })
+
+    it('Should throw DOCUMENT_NOT_FOUND when a category does not exist', async () => {
+      Category.findById.mockResolvedValue(null)
+
+      await expect(categoryService.getCategoryById(categoryId)).rejects.toMatchObject({
+        status: 404,
+        code: 'DOCUMENT_NOT_FOUND',
+        message: 'Category with the specified ID was not found.'
+      })
+    })
+
+    it('Should reject when retrieving a category fails', async () => {
+      Category.findById.mockRejectedValue(new Error('Test error'))
+
+      await expect(categoryService.getCategoryById(categoryId)).rejects.toThrow('Test error')
+    })
   })
 
-  it.each([
-    new Error('Database unavailable'),
-    Object.assign(new Error('Category validation failed'), { name: 'ValidationError' }),
-    Object.assign(new Error('Duplicate name'), { name: 'MongoServerError', code: 11000 })
-  ])('propagates model errors to the error middleware: %s', async (error) => {
-    Category.create.mockRejectedValueOnce(error)
+  describe('createCategory', () => {
+    it('passes only name and appearance to the model and returns the created category', async () => {
+      const appearance = { icon: '/icons/test.svg', color: '#123456' }
+      const saved = { _id: 'category-id', name: 'Test Category', appearance }
+      Category.create.mockResolvedValue(saved)
 
-    await expect(categoryService.createCategory({ name: 'Test Category' })).rejects.toBe(error)
+      const result = await categoryService.createCategory({
+        name: 'Test Category',
+        appearance,
+        _id: 'client-supplied-id',
+        createdAt: '2000-01-01',
+        extra: 'ignored'
+      })
+
+      expect(Category.create).toHaveBeenCalledWith({ name: 'Test Category', appearance })
+      expect(result).toBe(saved)
+    })
+
+    it('leaves omitted appearance to the model defaults', async () => {
+      await categoryService.createCategory({ name: 'Test Category' })
+
+      expect(Category.create).toHaveBeenCalledWith({ name: 'Test Category', appearance: undefined })
+    })
+
+    it.each([
+      new Error('Database unavailable'),
+      Object.assign(new Error('Category validation failed'), { name: 'ValidationError' }),
+      Object.assign(new Error('Duplicate name'), { name: 'MongoServerError', code: 11000 })
+    ])('propagates model errors to the error middleware: %s', async (error) => {
+      Category.create.mockRejectedValueOnce(error)
+
+      await expect(categoryService.createCategory({ name: 'Test Category' })).rejects.toBe(error)
+    })
   })
 })

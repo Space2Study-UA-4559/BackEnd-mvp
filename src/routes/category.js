@@ -1,5 +1,4 @@
 const router = require('express').Router()
-
 const { authMiddleware, restrictTo } = require('~/middlewares/auth')
 const {
   roles: { ADMIN }
@@ -7,7 +6,6 @@ const {
 const idValidation = require('~/middlewares/idValidation')
 const asyncWrapper = require('~/middlewares/asyncWrapper')
 const isEntityValid = require('~/middlewares/entityValidation')
-
 const categoryController = require('~/controllers/category')
 const subjectRouter = require('~/routes/subject')
 const offerRouter = require('~/routes/offer')
@@ -30,6 +28,10 @@ router.post('/', restrictTo(ADMIN), asyncWrapper(categoryController.createCatego
 PARAMS_ENUM.forEach((param) => {
   router.param(param, idValidation)
 })
+
+router.get('/', asyncWrapper(categoryController.getCategories))
+router.get('/names', asyncWrapper(categoryController.getCategoriesNames))
+router.get('/:id', asyncWrapper(categoryController.getCategoryById))
 
 router.get(
   '/:categoryId?/subjects/:subjectId?/price-range',
